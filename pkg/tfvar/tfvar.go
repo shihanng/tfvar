@@ -3,9 +3,15 @@ package tfvar
 import (
 	"github.com/cockroachdb/errors"
 	"github.com/hashicorp/terraform/configs"
+	"github.com/zclconf/go-cty/cty"
 )
 
-func Load(rootDir string) ([]string, error) {
+type Variable struct {
+	Name  string
+	Value cty.Value
+}
+
+func Load(rootDir string) ([]Variable, error) {
 	parser := configs.NewParser(nil)
 
 	modules, err := parser.LoadConfigDir(rootDir)
@@ -13,11 +19,14 @@ func Load(rootDir string) ([]string, error) {
 		return nil, errors.Wrap(err, "tfvar: loading config")
 	}
 
-	names := make([]string, 0, len(modules.Variables))
+	variables := make([]Variable, 0, len(modules.Variables))
 
 	for _, v := range modules.Variables {
-		names = append(names, v.Name)
+		variables = append(variables, Variable{
+			Name:  v.Name,
+			Value: v.Default,
+		})
 	}
 
-	return names, nil
+	return variables, nil
 }

@@ -9,4 +9,5 @@ require (
 	github.com/getsentry/raven-go v0.2.0 // indirect
 	github.com/hashicorp/terraform v0.12.19
 	github.com/stretchr/testify v1.3.0
+	github.com/zclconf/go-cty v1.1.1
 )

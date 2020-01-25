@@ -4,16 +4,18 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/zclconf/go-cty/cty"
 )
 
 func TestLoad(t *testing.T) {
 	type args struct {
 		rootDir string
 	}
+
 	tests := []struct {
 		name      string
 		args      args
-		want      []string
+		want      []Variable
 		assertion assert.ErrorAssertionFunc
 	}{
 		{
@@ -21,7 +23,10 @@ func TestLoad(t *testing.T) {
 			args: args{
 				rootDir: "./testdata/normal",
 			},
-			want:      []string{"resource_name"},
+			want: []Variable{
+				{Name: "resource_name"},
+				{Name: "instance_name", Value: cty.StringVal("my-instance")},
+			},
 			assertion: assert.NoError,
 		},
 		{
@@ -33,6 +38,7 @@ func TestLoad(t *testing.T) {
 			assertion: assert.Error,
 		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := Load(tt.args.rootDir)
