@@ -1,7 +1,12 @@
 package tfvar
 
 import (
+	"bytes"
+	"fmt"
+	"io"
+
 	"github.com/cockroachdb/errors"
+	"github.com/hashicorp/hcl/v2/hclwrite"
 	"github.com/hashicorp/terraform/configs"
 	"github.com/zclconf/go-cty/cty"
 )
@@ -29,4 +34,21 @@ func Load(rootDir string) ([]Variable, error) {
 	}
 
 	return variables, nil
+}
+
+const VarEnvPrefix = "TF_VAR_"
+
+func WriteAsEnvVars(w io.Writer, vars []Variable) error {
+	for _, v := range vars {
+		t := hclwrite.TokensForValue(v.Value)
+		b := t.Bytes()
+		b = bytes.TrimPrefix(b, []byte(`"`))
+		b = bytes.TrimSuffix(b, []byte(`"`))
+
+		if _, err := fmt.Fprintf(w, "export %s%s='%s'\n", VarEnvPrefix, v.Name, string(b)); err != nil {
+			return errors.Wrap(err, "tfvar: unexpected writing export")
+		}
+	}
+
+	return nil
 }
