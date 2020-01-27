@@ -39,18 +39,21 @@ func Load(rootDir string) ([]Variable, error) {
 const VarEnvPrefix = "TF_VAR_"
 
 func WriteAsEnvVars(w io.Writer, vars []Variable) error {
+	var we error
+
 	for _, v := range vars {
 		t := hclwrite.TokensForValue(v.Value)
 		b := t.Bytes()
 		b = bytes.TrimPrefix(b, []byte(`"`))
 		b = bytes.TrimSuffix(b, []byte(`"`))
 
-		if _, err := fmt.Fprintf(w, "export %s%s='%s'\n", VarEnvPrefix, v.Name, string(b)); err != nil {
-			return errors.Wrap(err, "tfvar: unexpected writing export")
+		if we == nil {
+			_, err := fmt.Fprintf(w, "export %s%s='%s'\n", VarEnvPrefix, v.Name, string(b))
+			we = errors.Wrap(err, "tfvar: unexpected writing export")
 		}
 	}
 
-	return nil
+	return we
 }
 
 func WriteAsTFVars(w io.Writer, vars []Variable) error {
