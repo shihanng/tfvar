@@ -65,3 +65,18 @@ export TF_VAR_instance_name='my-instance'
 `
 	assert.Equal(t, expected, buf.String())
 }
+
+func TestWriteAsTFVars(t *testing.T) {
+	vars, err := Load("testdata/defaults")
+	require.NoError(t, err)
+
+	sort.Slice(vars, func(i, j int) bool { return vars[i].Name < vars[j].Name })
+
+	var buf bytes.Buffer
+	assert.NoError(t, WriteAsTFVars(&buf, vars))
+
+	expected := `availability_zone_names = ["us-west-1a"]
+instance_name           = "my-instance"
+`
+	assert.Equal(t, expected, buf.String())
+}
