@@ -19,9 +19,9 @@ type Variable struct {
 func Load(rootDir string) ([]Variable, error) {
 	parser := configs.NewParser(nil)
 
-	modules, err := parser.LoadConfigDir(rootDir)
-	if err != nil {
-		return nil, errors.Wrap(err, "tfvar: loading config")
+	modules, diag := parser.LoadConfigDir(rootDir)
+	if diag.HasErrors() {
+		return nil, errors.Wrap(diag, "tfvar: loading config")
 	}
 
 	variables := make([]Variable, 0, len(modules.Variables))
