@@ -62,6 +62,7 @@ func TestWriteAsEnvVars(t *testing.T) {
 
 	expected := `export TF_VAR_availability_zone_names='["us-west-1a"]'
 export TF_VAR_instance_name='my-instance'
+export TF_VAR_region=''
 `
 	assert.Equal(t, expected, buf.String())
 }
@@ -77,6 +78,7 @@ func TestWriteAsTFVars(t *testing.T) {
 
 	expected := `availability_zone_names = ["us-west-1a"]
 instance_name           = "my-instance"
+region                  = ""
 `
 	assert.Equal(t, expected, buf.String())
 }

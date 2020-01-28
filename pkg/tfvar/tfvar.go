@@ -42,7 +42,9 @@ func WriteAsEnvVars(w io.Writer, vars []Variable) error {
 	var we error
 
 	for _, v := range vars {
-		t := hclwrite.TokensForValue(v.Value)
+		val := convertNull(v.Value)
+
+		t := hclwrite.TokensForValue(val)
 		b := t.Bytes()
 		b = bytes.TrimPrefix(b, []byte(`"`))
 		b = bytes.TrimSuffix(b, []byte(`"`))
@@ -61,9 +63,18 @@ func WriteAsTFVars(w io.Writer, vars []Variable) error {
 	rootBody := f.Body()
 
 	for _, v := range vars {
-		rootBody.SetAttributeValue(v.Name, v.Value)
+		val := convertNull(v.Value)
+		rootBody.SetAttributeValue(v.Name, val)
 	}
 
 	_, err := f.WriteTo(w)
 	return errors.Wrap(err, "tfvar: failed to write as tfvars")
+}
+
+func convertNull(v cty.Value) cty.Value {
+	if v.IsNull() {
+		return cty.StringVal("")
+	}
+
+	return v
 }
