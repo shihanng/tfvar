@@ -14,6 +14,8 @@ import (
 type Variable struct {
 	Name  string
 	Value cty.Value
+
+	parsingMode configs.VariableParsingMode
 }
 
 func Load(rootDir string) ([]Variable, error) {
@@ -30,6 +32,8 @@ func Load(rootDir string) ([]Variable, error) {
 		variables = append(variables, Variable{
 			Name:  v.Name,
 			Value: v.Default,
+
+			parsingMode: v.ParsingMode,
 		})
 	}
 

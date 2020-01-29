@@ -5,6 +5,7 @@ import (
 	"sort"
 	"testing"
 
+	"github.com/hashicorp/terraform/configs"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/zclconf/go-cty/cty"
@@ -27,8 +28,8 @@ func TestLoad(t *testing.T) {
 				rootDir: "./testdata/normal",
 			},
 			want: []Variable{
-				{Name: "resource_name"},
-				{Name: "instance_name", Value: cty.StringVal("my-instance")},
+				{Name: "resource_name", parsingMode: configs.VariableParseLiteral},
+				{Name: "instance_name", Value: cty.StringVal("my-instance"), parsingMode: configs.VariableParseLiteral},
 			},
 			assertion: assert.NoError,
 		},
