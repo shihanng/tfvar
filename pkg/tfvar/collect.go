@@ -36,10 +36,6 @@ func collectFromEnvVars(to map[string]UnparsedVariableValue) {
 	}
 }
 
-// unparsedVariableValueString is a backend.UnparsedVariableValue
-// implementation that parses its value from a string. This can be used
-// to deal with values given directly on the command line and via environment
-// variables.
 type unparsedVariableValueString struct {
 	str  string
 	name string
@@ -47,5 +43,9 @@ type unparsedVariableValueString struct {
 
 func (v unparsedVariableValueString) ParseVariableValue(mode configs.VariableParsingMode) (cty.Value, error) {
 	val, hclDiags := mode.Parse(v.name, v.str)
-	return val, errors.Wrap(hclDiags, "tfvar: failed to parse unparsedVariableValueString")
+	if hclDiags.HasErrors() {
+		return cty.Value{}, errors.Wrap(hclDiags, "tfvar: failed to parse unparsedVariableValueString")
+	}
+
+	return val, nil
 }
