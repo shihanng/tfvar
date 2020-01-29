@@ -36,6 +36,23 @@ func collectFromEnvVars(to map[string]UnparsedVariableValue) {
 	}
 }
 
+func collectFromString(raw string, to map[string]UnparsedVariableValue) error {
+	eq := strings.Index(raw, "=")
+	if eq == -1 {
+		return errors.Errorf("tfvar: bad var string '%s'", raw)
+	}
+
+	name := raw[:eq]
+	rawVal := raw[eq+1:]
+
+	to[name] = unparsedVariableValueString{
+		str:  rawVal,
+		name: name,
+	}
+
+	return nil
+}
+
 type unparsedVariableValueString struct {
 	str  string
 	name string
