@@ -79,7 +79,7 @@ func TestWriteAsTFVars(t *testing.T) {
 
 	expected := `availability_zone_names = ["us-west-1a"]
 instance_name           = "my-instance"
-region                  = ""
+region                  = null
 `
 	assert.Equal(t, expected, buf.String())
 }

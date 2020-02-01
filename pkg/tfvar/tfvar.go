@@ -67,8 +67,7 @@ func WriteAsTFVars(w io.Writer, vars []Variable) error {
 	rootBody := f.Body()
 
 	for _, v := range vars {
-		val := convertNull(v.Value)
-		rootBody.SetAttributeValue(v.Name, val)
+		rootBody.SetAttributeValue(v.Name, v.Value)
 	}
 
 	_, err := f.WriteTo(w)
