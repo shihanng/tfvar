@@ -21,9 +21,9 @@ func New() (*cobra.Command, func()) {
 
 	rootCmd := &cobra.Command{
 		Use:   "tfvar [DIR]",
-		Short: "A CLI tool that helps generate variable definitions for Terraform module",
-		Long: `Generate variable definitions for Terraform module as one would write it
-in .tfvars files. This tool works for both root modules and child modules.
+		Short: "A CLI tool that helps generate template for Terraform's variable definitions",
+		Long: `Generate variable definitions template for Terraform module as
+one would write it in .tfvars files.
 `,
 		PreRunE: r.preRootRunE,
 		RunE:    r.rootRunE,
