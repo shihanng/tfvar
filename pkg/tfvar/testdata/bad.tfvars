@@ -1,0 +1,1 @@
+prefix "<RESOURCE_PREFIX>"
