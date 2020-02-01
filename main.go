@@ -1,18 +1,10 @@
 package main
 
-import (
-	"fmt"
-	"log"
-	"os"
-
-	"github.com/shihanng/tfvar/pkg/tfvar"
-)
+import "github.com/shihanng/tfvar/cmd"
 
 func main() {
-	names, err := tfvar.Load(os.Args[1])
-	if err != nil {
-		log.Fatal(err)
-	}
+	c, sync := cmd.New()
+	_ = c.Execute()
 
-	fmt.Println(names)
+	sync()
 }

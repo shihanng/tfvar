@@ -1,3 +1,5 @@
+LDFLAGS := -ldflags="-s -w"
+
 .PHONY: help test lint mod-check
 
 help:
@@ -11,3 +13,12 @@ lint: ## Run GolangCI-Lint
 
 mod-check: ## Run check on go mod tidy
 	go mod tidy && git --no-pager diff --exit-code -- go.mod go.sum
+
+tfvar: ## Build tfvar binary
+	go build $(LDFLAGS) -o tfvar
+
+install: ## Install tfvar into $GOBIN
+	go install $(LDFLAGS)
+
+clean: ## Cleanup
+	rm tfvar
