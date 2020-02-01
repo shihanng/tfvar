@@ -35,7 +35,8 @@ variable "docker_ports" {
 
 **tfvar** will search for all input variables and generate template that helps user populates those variables easily:
 
-```terraform
+```
+$ tfvar .
 availability_zone_names = ["us-west-1a"]
 docker_ports            = [{ external = 8300, internal = 8300, protocol = "tcp" }]
 image_id                = null
