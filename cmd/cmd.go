@@ -13,6 +13,7 @@ import (
 const (
 	flagDebug     = "debug"
 	flagNoDefault = "ignore-default"
+	flagEnvVar    = "env-var"
 )
 
 func New() (*cobra.Command, func()) {
@@ -31,6 +32,7 @@ in .tfvars files. This tool works for both root modules and child modules.
 
 	rootCmd.PersistentFlags().BoolP(flagDebug, "d", false, "Print debug log on stderr")
 	rootCmd.PersistentFlags().Bool(flagNoDefault, false, "Do not use defined default values")
+	rootCmd.PersistentFlags().BoolP(flagEnvVar, "e", false, "Print output in export TF_VAR_image_id=ami-abc123 format")
 
 	return rootCmd, func() {
 		if r.log != nil {
@@ -85,5 +87,17 @@ func (r *runner) rootRunE(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	return tfvar.WriteAsTFVars(os.Stdout, vars)
+	isEnvVar, err := cmd.PersistentFlags().GetBool(flagEnvVar)
+	if err != nil {
+		return errors.Wrap(err, "cmd: get flag --env-var")
+	}
+
+	writer := tfvar.WriteAsTFVars
+
+	if isEnvVar {
+		r.log.Debug("Print outputs in environment variables format")
+		writer = tfvar.WriteAsEnvVars
+	}
+
+	return writer(os.Stdout, vars)
 }
