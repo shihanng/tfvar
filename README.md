@@ -3,6 +3,7 @@
 [![](https://github.com/shihanng/tfvar/workflows/main/badge.svg?branch=master)](https://github.com/shihanng/tfvar/actions?query=workflow%3Amain)
 [![Coverage Status](https://coveralls.io/repos/github/shihanng/tfvar/badge.svg?branch=master)](https://coveralls.io/github/shihanng/tfvar?branch=master)
 [![Go Report Card](https://goreportcard.com/badge/github.com/shihanng/tfvar)](https://goreportcard.com/report/github.com/shihanng/tfvar)
+[![Package Documentation](https://godoc.org/github.com/shihanng/tfvar/pkg/tfvar?status.svg)](http://godoc.org/github.com/shihanng/tfvar/pkg/tfvar)
 [![GitHub license](https://img.shields.io/github/license/shihanng/tfvar)](https://github.com/shihanng/tfvar/blob/master/LICENSE)
 
 **tfvar** is a [Terraform](https://www.terraform.io/)'s [variable definitions](https://www.terraform.io/docs/configuration/variables.html#assigning-values-to-root-module-variables) template generator.
