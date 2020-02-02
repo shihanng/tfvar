@@ -1,0 +1,58 @@
+env:
+  - GO111MODULE=on
+  - CGO_ENABLED=0
+
+before:
+  hooks:
+    - make mod-check
+
+builds:
+  - goos:
+      - darwin
+      - windows
+      - linux
+    goarch:
+      - amd64
+      - "386"
+    ldflags:
+      - -s -w -X main.version={{.Version}}
+
+archives:
+  - format: tar.gz
+    name_template: "{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
+    files:
+      - LICENSE*
+      - README*
+
+brews:
+  - github:
+      owner: shihanng
+      name: homebrew-tfvar
+    commit_author:
+      name: "Shi Han NG"
+      email: shihanng@gmail.com
+    description: "Terraform's variable definitions template generator."
+    homepage: "https://github.com/shihanng/tfvar"
+    install: |
+      bin.install Dir['tfvar']
+    test: |
+      system "#{bin}/tfvar"
+
+nfpm:
+  homepage: https://github.com/shihanng/tfvar
+  maintainer: Shi Han NG <shihanng@gmail.com>
+  description: "Terraform's variable definitions template generator."
+  bindir: /usr/local/bin
+  license: MIT
+  formats:
+    - deb
+    - rpm
+
+checksum:
+  name_template: "{{ .ProjectName }}_{{ .Version }}_checksums.txt"
+
+snapshot:
+  name_template: "{{ .Tag }}-next"
+
+changelog:
+  skip: true
