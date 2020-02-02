@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"os"
+	"sort"
 
 	"github.com/cockroachdb/errors"
 	"github.com/shihanng/tfvar/pkg/tfvar"
@@ -79,6 +80,8 @@ func (r *runner) rootRunE(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
+
+	sort.Slice(vars, func(i, j int) bool { return vars[i].Name < vars[j].Name })
 
 	ignoreDefault, err := cmd.PersistentFlags().GetBool(flagNoDefault)
 	if err != nil {
