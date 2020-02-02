@@ -14,7 +14,7 @@ func TestPlain(t *testing.T) {
 	os.Args = strings.Fields("tfvar testdata")
 
 	var actual bytes.Buffer
-	cmd, sync := New(&actual)
+	cmd, sync := New(&actual, "dev")
 	defer sync()
 
 	require.NoError(t, cmd.Execute())
@@ -28,7 +28,7 @@ func TestEnvVar(t *testing.T) {
 	os.Args = strings.Fields("tfvar testdata -e")
 
 	var actual bytes.Buffer
-	cmd, sync := New(&actual)
+	cmd, sync := New(&actual, "dev")
 	defer sync()
 
 	require.NoError(t, cmd.Execute())
@@ -42,7 +42,7 @@ func TestIgnoreDefault(t *testing.T) {
 	os.Args = strings.Fields("tfvar testdata --ignore-default")
 
 	var actual bytes.Buffer
-	cmd, sync := New(&actual)
+	cmd, sync := New(&actual, "dev")
 	defer sync()
 
 	require.NoError(t, cmd.Execute())
@@ -57,7 +57,7 @@ func TestAutoAssign(t *testing.T) {
 	os.Setenv("TF_VAR_image_id", "abc123")
 
 	var actual bytes.Buffer
-	cmd, sync := New(&actual)
+	cmd, sync := New(&actual, "dev")
 	defer sync()
 
 	require.NoError(t, cmd.Execute())
