@@ -40,7 +40,7 @@ func Load(rootDir string) ([]Variable, error) {
 	return variables, nil
 }
 
-const VarEnvPrefix = "TF_VAR_"
+const varEnvPrefix = "TF_VAR_"
 
 func WriteAsEnvVars(w io.Writer, vars []Variable) error {
 	var we error
@@ -54,7 +54,7 @@ func WriteAsEnvVars(w io.Writer, vars []Variable) error {
 		b = bytes.TrimSuffix(b, []byte(`"`))
 
 		if we == nil {
-			_, err := fmt.Fprintf(w, "export %s%s='%s'\n", VarEnvPrefix, v.Name, string(b))
+			_, err := fmt.Fprintf(w, "export %s%s='%s'\n", varEnvPrefix, v.Name, string(b))
 			we = errors.Wrap(err, "tfvar: unexpected writing export")
 		}
 	}

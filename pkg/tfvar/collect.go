@@ -61,10 +61,10 @@ type UnparsedVariableValue interface {
 func CollectFromEnvVars(to map[string]UnparsedVariableValue) {
 	env := os.Environ()
 	for _, raw := range env {
-		if !strings.HasPrefix(raw, VarEnvPrefix) {
+		if !strings.HasPrefix(raw, varEnvPrefix) {
 			continue
 		}
-		raw = raw[len(VarEnvPrefix):] // trim the prefix
+		raw = raw[len(varEnvPrefix):] // trim the prefix
 
 		eq := strings.Index(raw, "=")
 
