@@ -11,6 +11,41 @@ import (
 	"github.com/zclconf/go-cty/cty"
 )
 
+func TestLookupTFVarsFiles(t *testing.T) {
+	type args struct {
+		path string
+	}
+
+	tests := []struct {
+		name      string
+		args      args
+		want      []string
+		assertion assert.ErrorAssertionFunc
+	}{
+		{
+			name: "found everything",
+			args: args{
+				path: "testdata/lookup-normal",
+			},
+			want: []string{
+				"testdata/lookup-normal/terraform.tfvars",
+				"testdata/lookup-normal/terraform.tfvars.json",
+				"testdata/lookup-normal/mydefault.auto.tfvars",
+				"testdata/lookup-normal/mydefault.auto.tfvars.json",
+			},
+			assertion: assert.NoError,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := LookupTFVarsFiles(tt.args.path)
+			tt.assertion(t, err)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
 func TestCollectFromEnvVars(t *testing.T) {
 	require.NoError(t, os.Setenv("MY_VAR", "my-value"))
 	require.NoError(t, os.Setenv("TF_VAR_availability_zone_names", `'["us-west-1a"]'`))

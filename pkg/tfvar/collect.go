@@ -3,6 +3,7 @@ package tfvar
 import (
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/cockroachdb/errors"
@@ -12,6 +13,46 @@ import (
 	"github.com/hashicorp/terraform/configs"
 	"github.com/zclconf/go-cty/cty"
 )
+
+const (
+	defaultVarsFilename     = "terraform.tfvars"
+	defaultVarsFilenameJSON = defaultVarsFilename + `.json`
+)
+
+func LookupTFVarsFiles(dir string) ([]string, error) {
+	var files []string
+
+	d := filepath.Join(dir, defaultVarsFilename)
+	if _, err := os.Stat(d); err == nil {
+		files = append(files, d)
+	}
+
+	dj := filepath.Join(dir, defaultVarsFilenameJSON)
+	if _, err := os.Stat(dj); err == nil {
+		files = append(files, dj)
+	}
+
+	if infos, err := ioutil.ReadDir(dir); err == nil {
+		// "infos" is already sorted by name, so we just need to filter it here.
+		for _, info := range infos {
+			name := info.Name()
+			if !isAutoVarFile(name) {
+				continue
+			}
+
+			files = append(files, filepath.Join(dir, name))
+		}
+	}
+
+	return files, nil
+}
+
+// isAutoVarFile determines if the file ends with .auto.tfvars or .auto.tfvars.json
+// https://github.com/hashicorp/terraform/blob/e9d0822b2a60f15653da0120607e74df1e116422/command/meta.go#L635-L638
+func isAutoVarFile(path string) bool {
+	return strings.HasSuffix(path, ".auto.tfvars") ||
+		strings.HasSuffix(path, ".auto.tfvars.json")
+}
 
 type UnparsedVariableValue interface {
 	ParseVariableValue(configs.VariableParsingMode) (cty.Value, error)
