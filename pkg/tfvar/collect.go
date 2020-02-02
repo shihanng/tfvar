@@ -19,6 +19,7 @@ const (
 	defaultVarsFilenameJSON = defaultVarsFilename + `.json`
 )
 
+// LookupTFVarsFiles search for terraform.tfvars, terraform.tfvars.json, *.auto.tfvars, and *.auto.tfvars.json in dir. The value of dir is include in the returned value.
 func LookupTFVarsFiles(dir string) []string {
 	var files []string
 
@@ -54,10 +55,12 @@ func isAutoVarFile(path string) bool {
 		strings.HasSuffix(path, ".auto.tfvars.json")
 }
 
+// UnparsedVariableValue describes the value of variable definitions defined in tfvars files, environment variables, and raw string.
 type UnparsedVariableValue interface {
 	ParseVariableValue(configs.VariableParsingMode) (cty.Value, error)
 }
 
+// CollectFromEnvVars extracts the variable definitions from all environment variables that prefixed with TF_VAR_.
 func CollectFromEnvVars(to map[string]UnparsedVariableValue) {
 	env := os.Environ()
 	for _, raw := range env {
@@ -81,6 +84,7 @@ func CollectFromEnvVars(to map[string]UnparsedVariableValue) {
 	}
 }
 
+// CollectFromString extracts the variable definition from the given string.
 func CollectFromString(raw string, to map[string]UnparsedVariableValue) error {
 	eq := strings.Index(raw, "=")
 	if eq == -1 {
@@ -98,6 +102,7 @@ func CollectFromString(raw string, to map[string]UnparsedVariableValue) error {
 	return nil
 }
 
+// CollectFromFile extracts the variable definitions from the given file.
 func CollectFromFile(filename string, to map[string]UnparsedVariableValue) error {
 	src, err := ioutil.ReadFile(filename)
 	if err != nil {
@@ -160,6 +165,7 @@ func (v unparsedVariableValueExpression) ParseVariableValue(_ configs.VariablePa
 	return val, nil
 }
 
+// ParseValues assigns defined variables into the matching declared variables.
 func ParseValues(from map[string]UnparsedVariableValue, vars []Variable) ([]Variable, error) {
 	for i, v := range vars {
 		unparsed, found := from[v.Name]
