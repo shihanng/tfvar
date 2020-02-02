@@ -24,7 +24,7 @@ const (
 //    	log.Fatal(err)
 //    }
 //    sync()
-func New(out io.Writer) (*cobra.Command, func()) {
+func New(out io.Writer, version string) (*cobra.Command, func()) {
 	r := &runner{
 		out: out,
 	}
@@ -38,6 +38,7 @@ one would write it in variable definitions files (.tfvars).
 		PreRunE: r.preRootRunE,
 		RunE:    r.rootRunE,
 		Args:    cobra.ExactArgs(1),
+		Version: version,
 	}
 
 	rootCmd.PersistentFlags().BoolP(flagAutoAssign, "a", false, `Use values from environment variables TF_VAR_* and
