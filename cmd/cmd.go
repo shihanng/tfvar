@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"os"
+	"io"
 	"sort"
 
 	"github.com/cockroachdb/errors"
@@ -18,14 +18,16 @@ const (
 	flagNoDefault  = "ignore-default"
 )
 
-func New() (*cobra.Command, func()) {
-	r := &runner{}
+func New(out io.Writer) (*cobra.Command, func()) {
+	r := &runner{
+		out: out,
+	}
 
 	rootCmd := &cobra.Command{
 		Use:   "tfvar [DIR]",
 		Short: "A CLI tool that helps generate template for Terraform's variable definitions",
 		Long: `Generate variable definitions template for Terraform module as
-one would write it in .tfvars files.
+one would write it in variable definitions files (.tfvars).
 `,
 		PreRunE: r.preRootRunE,
 		RunE:    r.rootRunE,
@@ -46,6 +48,7 @@ variable definitions files e.g. terraform.tfvars[.json] *.auto.tfvars[.json]`)
 }
 
 type runner struct {
+	out io.Writer
 	log *zap.SugaredLogger
 }
 
@@ -132,5 +135,5 @@ func (r *runner) rootRunE(cmd *cobra.Command, args []string) error {
 		writer = tfvar.WriteAsEnvVars
 	}
 
-	return writer(os.Stdout, vars)
+	return writer(r.out, vars)
 }
