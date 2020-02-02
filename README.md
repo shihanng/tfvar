@@ -65,12 +65,14 @@ make install
 ```
 $ tfvar --help
 Generate variable definitions template for Terraform module as
-one would write it in .tfvars files.
+one would write it in variable definitions files (.tfvars).
 
 Usage:
   tfvar [DIR] [flags]
 
 Flags:
+  -a, --auto-assign      Use values from environment variables TF_VAR_* and
+                         variable definitions files e.g. terraform.tfvars[.json] *.auto.tfvars[.json]
   -d, --debug            Print debug log on stderr
   -e, --env-var          Print output in export TF_VAR_image_id=ami-abc123 format
   -h, --help             help for tfvar
