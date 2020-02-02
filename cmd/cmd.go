@@ -18,6 +18,12 @@ const (
 	flagNoDefault  = "ignore-default"
 )
 
+// New returns a new instance of cobra.Command for tfvar. Usage:
+//    c, sync := cmd.New(os.Stdout)
+//    if err := c.Execute(); err != nil {
+//    	log.Fatal(err)
+//    }
+//    sync()
 func New(out io.Writer) (*cobra.Command, func()) {
 	r := &runner{
 		out: out,
