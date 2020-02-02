@@ -1,3 +1,4 @@
+// Package tfvar contains the essential tools to extract input variables from Terraform configurations, retrieve variable definitions from sources, and parse those values back into the input variables.
 package tfvar
 
 import (
@@ -11,6 +12,10 @@ import (
 	"github.com/zclconf/go-cty/cty"
 )
 
+// Variable represents a simplified version of Terraform's input variable, e.g.
+//    variable "image_id" {
+//      type = string
+//    }
 type Variable struct {
 	Name  string
 	Value cty.Value
@@ -18,10 +23,11 @@ type Variable struct {
 	parsingMode configs.VariableParsingMode
 }
 
-func Load(rootDir string) ([]Variable, error) {
+// Load extracts all input variables declared in the Terraform configurations located in dir.
+func Load(dir string) ([]Variable, error) {
 	parser := configs.NewParser(nil)
 
-	modules, diag := parser.LoadConfigDir(rootDir)
+	modules, diag := parser.LoadConfigDir(dir)
 	if diag.HasErrors() {
 		return nil, errors.Wrap(diag, "tfvar: loading config")
 	}
@@ -42,6 +48,8 @@ func Load(rootDir string) ([]Variable, error) {
 
 const varEnvPrefix = "TF_VAR_"
 
+// WriteAsEnvVars outputs the given vars in environment variables format, e.g.
+//    export TF_VAR_region='ap-northeast-1'
 func WriteAsEnvVars(w io.Writer, vars []Variable) error {
 	var we error
 
@@ -62,6 +70,8 @@ func WriteAsEnvVars(w io.Writer, vars []Variable) error {
 	return we
 }
 
+// WriteAsTFVars outputs the given vars in Terraform's variable definitions format, e.g.
+//    region = "ap-northeast-1"
 func WriteAsTFVars(w io.Writer, vars []Variable) error {
 	f := hclwrite.NewEmptyFile()
 	rootBody := f.Body()

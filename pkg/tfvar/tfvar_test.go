@@ -13,7 +13,7 @@ import (
 
 func TestLoad(t *testing.T) {
 	type args struct {
-		rootDir string
+		dir string
 	}
 
 	tests := []struct {
@@ -25,7 +25,7 @@ func TestLoad(t *testing.T) {
 		{
 			name: "normal",
 			args: args{
-				rootDir: "./testdata/normal",
+				dir: "./testdata/normal",
 			},
 			want: []Variable{
 				{Name: "resource_name", parsingMode: configs.VariableParseLiteral},
@@ -36,7 +36,7 @@ func TestLoad(t *testing.T) {
 		{
 			name: "bad",
 			args: args{
-				rootDir: "./testdata/bad",
+				dir: "./testdata/bad",
 			},
 			want:      nil,
 			assertion: assert.Error,
@@ -45,7 +45,7 @@ func TestLoad(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := Load(tt.args.rootDir)
+			got, err := Load(tt.args.dir)
 			tt.assertion(t, err)
 			assert.ElementsMatch(t, tt.want, got)
 		})
