@@ -19,7 +19,7 @@ const (
 	defaultVarsFilenameJSON = defaultVarsFilename + `.json`
 )
 
-func LookupTFVarsFiles(dir string) ([]string, error) {
+func LookupTFVarsFiles(dir string) []string {
 	var files []string
 
 	d := filepath.Join(dir, defaultVarsFilename)
@@ -44,7 +44,7 @@ func LookupTFVarsFiles(dir string) ([]string, error) {
 		}
 	}
 
-	return files, nil
+	return files
 }
 
 // isAutoVarFile determines if the file ends with .auto.tfvars or .auto.tfvars.json

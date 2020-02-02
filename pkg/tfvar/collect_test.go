@@ -17,10 +17,9 @@ func TestLookupTFVarsFiles(t *testing.T) {
 	}
 
 	tests := []struct {
-		name      string
-		args      args
-		want      []string
-		assertion assert.ErrorAssertionFunc
+		name string
+		args args
+		want []string
 	}{
 		{
 			name: "found everything",
@@ -33,14 +32,12 @@ func TestLookupTFVarsFiles(t *testing.T) {
 				"testdata/lookup-normal/mydefault.auto.tfvars",
 				"testdata/lookup-normal/mydefault.auto.tfvars.json",
 			},
-			assertion: assert.NoError,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := LookupTFVarsFiles(tt.args.path)
-			tt.assertion(t, err)
+			got := LookupTFVarsFiles(tt.args.path)
 			assert.Equal(t, tt.want, got)
 		})
 	}
