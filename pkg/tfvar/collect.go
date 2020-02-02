@@ -58,7 +58,7 @@ type UnparsedVariableValue interface {
 	ParseVariableValue(configs.VariableParsingMode) (cty.Value, error)
 }
 
-func collectFromEnvVars(to map[string]UnparsedVariableValue) {
+func CollectFromEnvVars(to map[string]UnparsedVariableValue) {
 	env := os.Environ()
 	for _, raw := range env {
 		if !strings.HasPrefix(raw, VarEnvPrefix) {
@@ -81,7 +81,7 @@ func collectFromEnvVars(to map[string]UnparsedVariableValue) {
 	}
 }
 
-func collectFromString(raw string, to map[string]UnparsedVariableValue) error {
+func CollectFromString(raw string, to map[string]UnparsedVariableValue) error {
 	eq := strings.Index(raw, "=")
 	if eq == -1 {
 		return errors.Errorf("tfvar: bad var string '%s'", raw)
@@ -98,7 +98,7 @@ func collectFromString(raw string, to map[string]UnparsedVariableValue) error {
 	return nil
 }
 
-func collectFromFile(filename string, to map[string]UnparsedVariableValue) error {
+func CollectFromFile(filename string, to map[string]UnparsedVariableValue) error {
 	src, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return errors.Errorf("tfvar: reading file '%s'", filename)

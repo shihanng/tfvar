@@ -51,7 +51,7 @@ func TestCollectFromEnvVars(t *testing.T) {
 	require.NoError(t, os.Setenv("TF_VAR_availability_zone_names", `'["us-west-1a"]'`))
 
 	actual := make(map[string]UnparsedVariableValue)
-	collectFromEnvVars(actual)
+	CollectFromEnvVars(actual)
 
 	expected := map[string]UnparsedVariableValue{
 		"availability_zone_names": unparsedVariableValueString{
@@ -102,7 +102,7 @@ func TestCollectFromString(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tt.assertion(t, collectFromString(tt.args.raw, tt.args.to))
+			tt.assertion(t, CollectFromString(tt.args.raw, tt.args.to))
 			assert.Equal(t, tt.want, tt.args.to)
 		})
 	}
@@ -182,7 +182,7 @@ func TestCollectFromFile(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tt.assertion(t, collectFromFile(tt.args.filename, tt.args.to))
+			tt.assertion(t, CollectFromFile(tt.args.filename, tt.args.to))
 
 			actual := make([]cty.Value, 0, len(tt.args.to))
 			for _, v := range tt.args.to {
