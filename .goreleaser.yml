@@ -41,6 +41,7 @@ brews:
 nfpms:
   - homepage: https://github.com/shihanng/tfvar
     maintainer: Shi Han NG <shihanng@gmail.com>
+    file_name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
     description: "Terraform's variable definitions template generator."
     bindir: /usr/local/bin
     license: MIT
