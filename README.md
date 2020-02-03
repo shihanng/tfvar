@@ -47,6 +47,34 @@ image_id                = null
 
 ## Installation
 
+### [Homebrew (macOS)](https://github.com/shihanng/homebrew-tfvar)
+
+```
+brew install shihanng/tfvar/tfvar
+```
+
+### Debian, Ubuntu
+
+```
+curl -sLO https://github.com/shihanng/tfvar/releases/latest/download/tfvar_linux_amd64.deb
+dpkg -i tfvar_linux_amd64.deb
+```
+
+### RedHat, CentOS
+
+```
+rpm -ivh https://github.com/shihanng/tfvar/releases/latest/download/tfvar_linux_amd64.rpm
+```
+
+### Binaries
+
+The [release page](https://github.com/shihanng/tfvar/releases) contains binaries built for various platforms. Download the version matches your environment (e.g. `linux_amd64`) and place the binary in the executable `$PATH` e.g. `/usr/local/bin`:
+
+```
+curl -sL https://github.com/shihanng/tfvar/releases/latest/download/tfvar_linux_amd64.tar.gz | \
+    tar xz -C /usr/local/bin/ tfvar
+```
+
 ### For Gophers
 
 With [Go](https://golang.org/doc/install) already installed in your system, use `go get`
