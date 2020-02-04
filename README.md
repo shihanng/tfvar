@@ -60,7 +60,7 @@ variable "docker_ports" {
     ```
 - There is also `--auto-assign` option for those who wants the values from `terraform.tfvars[.json]`, `*.auto.tfvars[.json]`, and environment variables (`TF_VAR_` followed by the name of a declared variable) to be assigned to the generated definitions automatically.
     ```
-    $ export_VAR_availability_zone_names='["'["custom_zone"]'
+    $ export TF_VAR_availability_zone_names='["custom_zone"]'
     $ tfvar . --auto-assign
     availability_zone_names = ["custom_zone"]
     docker_ports            = [{ external = 8300, internal = 8300, protocol = "tcp" }]
