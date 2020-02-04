@@ -66,3 +66,28 @@ docker_ports            = [{ external = 80, internal = 80, protocol = "tcp" }]
 image_id                = "abc123"
 `, actual.String())
 }
+
+func TestVar(t *testing.T) {
+	os.Args = strings.Fields("tfvar testdata -a --var='image_id=abc123' --var='unknown=xxx'")
+
+	var actual bytes.Buffer
+	cmd, sync := New(&actual, "dev")
+	defer sync()
+
+	require.NoError(t, cmd.Execute())
+	assert.Equal(t, `availability_zone_names = ["my-zone"]
+docker_ports            = [{ external = 80, internal = 80, protocol = "tcp" }]
+image_id                = "abc123"
+`, actual.String())
+}
+
+func TestVarError(t *testing.T) {
+	os.Args = strings.Fields("tfvar testdata -a --var='unknown'")
+
+	var actual bytes.Buffer
+	cmd, sync := New(&actual, "dev")
+	defer sync()
+
+	assert.Error(t, cmd.Execute())
+	assert.Contains(t, actual.String(), `Error: tfvar: bad var string ''unknown''`)
+}

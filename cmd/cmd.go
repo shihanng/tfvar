@@ -16,6 +16,7 @@ const (
 	flagDebug      = "debug"
 	flagEnvVar     = "env-var"
 	flagNoDefault  = "ignore-default"
+	flagVar        = "var"
 )
 
 // New returns a new instance of cobra.Command for tfvar. Usage:
@@ -41,11 +42,15 @@ one would write it in variable definitions files (.tfvars).
 		Version: version,
 	}
 
+	rootCmd.SetOut(out)
+
 	rootCmd.PersistentFlags().BoolP(flagAutoAssign, "a", false, `Use values from environment variables TF_VAR_* and
 variable definitions files e.g. terraform.tfvars[.json] *.auto.tfvars[.json]`)
 	rootCmd.PersistentFlags().BoolP(flagDebug, "d", false, "Print debug log on stderr")
 	rootCmd.PersistentFlags().BoolP(flagEnvVar, "e", false, "Print output in export TF_VAR_image_id=ami-abc123 format")
 	rootCmd.PersistentFlags().Bool(flagNoDefault, false, "Do not use defined default values")
+	rootCmd.PersistentFlags().StringArray(flagVar, []string{}, `Set a variable in the generated definitions.
+This flag can be set multiple times.`)
 
 	return rootCmd, func() {
 		if r.log != nil {
@@ -127,6 +132,17 @@ func (r *runner) rootRunE(cmd *cobra.Command, args []string) error {
 			if err := tfvar.CollectFromFile(f, unparseds); err != nil {
 				return err
 			}
+		}
+	}
+
+	fvs, err := cmd.PersistentFlags().GetStringArray(flagVar)
+	if err != nil {
+		return errors.Wrap(err, "cmd: get flag --var")
+	}
+
+	for _, fv := range fvs {
+		if err := tfvar.CollectFromString(fv, unparseds); err != nil {
+			return err
 		}
 	}
 
