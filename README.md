@@ -66,6 +66,13 @@ variable "docker_ports" {
     docker_ports            = [{ external = 8300, internal = 8300, protocol = "tcp" }]
     image_id                = null
     ```
+- Like the [`terraform (plan|apply)`](https://www.terraform.io/docs/configuration/variables.html#variables-on-the-command-line) CLI tool, individual vairables can also be specified via `--var` option.
+    ```
+    $ tfvar . --var=availability_zone_names='["custom_zone"]' --var=image_id=abc123
+    availability_zone_names = ["custom_zone"]
+    docker_ports            = [{ external = 8300, internal = 8300, protocol = "tcp" }]
+    image_id                = "abc123"
+    ```
 
 For more info, checkout the `--help` page:
 
