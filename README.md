@@ -1,6 +1,7 @@
 # `tfvar`
 
 [![](https://github.com/shihanng/tfvar/workflows/main/badge.svg?branch=master)](https://github.com/shihanng/tfvar/actions?query=workflow%3Amain)
+[![](https://github.com/shihanng/tfvar/workflows/release/badge.svg?branch=master)](https://github.com/shihanng/tfvar/actions?query=workflow%3Arelease)
 [![Coverage Status](https://coveralls.io/repos/github/shihanng/tfvar/badge.svg?branch=master)](https://coveralls.io/github/shihanng/tfvar?branch=master)
 [![Go Report Card](https://goreportcard.com/badge/github.com/shihanng/tfvar)](https://goreportcard.com/report/github.com/shihanng/tfvar)
 [![Package Documentation](https://godoc.org/github.com/shihanng/tfvar/pkg/tfvar?status.svg)](http://godoc.org/github.com/shihanng/tfvar/pkg/tfvar)
@@ -36,14 +37,56 @@ variable "docker_ports" {
 }
 ```
 
-**tfvar** will search for all input variables and generate template that helps user populates those variables easily:
+- **tfvar** will search for all input variables and generate template that helps user populates those variables easily:
+    ```
+    $ tfvar .
+    availability_zone_names = ["us-west-1a"]
+    docker_ports            = [{ external = 8300, internal = 8300, protocol = "tcp" }]
+    image_id                = null
+    ```
+- Note that default values are assigned to the definitions by default as shown above. Use the `--ignore-default` options to ignore the default values.
+    ```
+    $ tfvar . --ignore-default
+    availability_zone_names = null
+    docker_ports            = null
+    image_id                = null
+    ```
+- **tfvar** also provides output in environment variable formats:
+    ```
+    $ tfvar . -e
+    export TF_VAR_availability_zone_names='["us-west-1a"]'
+    export TF_VAR_docker_ports='[{ external = 8300, internal = 8300, protocol = "tcp" }]'
+    export TF_VAR_image_id=''
+    ```
+- There is also `--auto-assign` option for those who wants the values from `terraform.tfvars[.json]`, `*.auto.tfvars[.json]`, and environment variables (`TF_VAR_` followed by the name of a declared variable) to be assigned to the generated definitions automatically.
+    ```
+    $ export_VAR_availability_zone_names='["'["custom_zone"]'
+    $ tfvar . --auto-assign
+    availability_zone_names = ["custom_zone"]
+    docker_ports            = [{ external = 8300, internal = 8300, protocol = "tcp" }]
+    image_id                = null
+    ```
+
+For more info, checkout the `--help` page:
 
 ```
-$ tfvar .
-availability_zone_names = ["us-west-1a"]
-docker_ports            = [{ external = 8300, internal = 8300, protocol = "tcp" }]
-image_id                = null
+$ tfvar --help
+Generate variable definitions template for Terraform module as
+one would write it in variable definitions files (.tfvars).
+
+Usage:
+  tfvar [DIR] [flags]
+
+Flags:
+  -a, --auto-assign      Use values from environment variables TF_VAR_* and
+                         variable definitions files e.g. terraform.tfvars[.json] *.auto.tfvars[.json]
+  -d, --debug            Print debug log on stderr
+  -e, --env-var          Print output in export TF_VAR_image_id=ami-abc123 format
+  -h, --help             help for tfvar
+      --ignore-default   Do not use defined default values
+      --version          version for tfvar
 ```
+
 
 ## Installation
 
@@ -89,25 +132,6 @@ or clone this repo and `make install`
 git clone https://github.com/shihanng/tfvar.git
 cd tfvar
 make install
-```
-
-## Usage
-
-```
-$ tfvar --help
-Generate variable definitions template for Terraform module as
-one would write it in variable definitions files (.tfvars).
-
-Usage:
-  tfvar [DIR] [flags]
-
-Flags:
-  -a, --auto-assign      Use values from environment variables TF_VAR_* and
-                         variable definitions files e.g. terraform.tfvars[.json] *.auto.tfvars[.json]
-  -d, --debug            Print debug log on stderr
-  -e, --env-var          Print output in export TF_VAR_image_id=ami-abc123 format
-  -h, --help             help for tfvar
-      --ignore-default   Do not use defined default values
 ```
 
 ## Contributing
