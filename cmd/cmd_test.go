@@ -91,3 +91,29 @@ func TestVarError(t *testing.T) {
 	assert.Error(t, cmd.Execute())
 	assert.Contains(t, actual.String(), `Error: tfvar: bad var string ''unknown''`)
 }
+
+func TestVarFile(t *testing.T) {
+	os.Args = strings.Fields("tfvar testdata --var-file testdata/my.tfvars")
+
+	var actual bytes.Buffer
+	cmd, sync := New(&actual, "dev")
+	defer sync()
+
+	require.NoError(t, cmd.Execute())
+	assert.Equal(t, `availability_zone_names = ["us-west-1a"]
+docker_ports            = [{ external = 8300, internal = 8300, protocol = "tcp" }]
+image_id                = "xyz"
+`, actual.String())
+}
+
+func TestVarFileError(t *testing.T) {
+	os.Args = strings.Fields("tfvar testdata --var-file testdata/bad.tfvars")
+
+	var actual bytes.Buffer
+	cmd, sync := New(&actual, "dev")
+	defer sync()
+
+	assert.Error(t, cmd.Execute())
+	assert.Contains(t, actual.String(), `Error: tfvar: failed to parse 'testdata/bad.tfvars'`)
+}
+
