@@ -73,6 +73,15 @@ variable "docker_ports" {
     docker_ports            = [{ external = 8300, internal = 8300, protocol = "tcp" }]
     image_id                = "abc123"
     ```
+- Variables in file can also be specified via `--var-file` option.
+    ```
+    $ cat my.tfvars
+    image_id = "xyz"
+    $ tfvar . --var-file my.tfvars
+    availability_zone_names = ["us-west-1a"]
+    docker_ports            = [{ external = 8300, internal = 8300, protocol = "tcp" }]
+    image_id                = "xyz"
+    ```
 
 For more info, checkout the `--help` page:
 
