@@ -56,7 +56,7 @@ func WriteAsEnvVars(w io.Writer, vars []Variable) error {
 	for _, v := range vars {
 		val := convertNull(v.Value)
 
-		t := hclwrite.TokensForValue(val)
+		t := appendTokensForValue(val, nil)
 		b := t.Bytes()
 		b = bytes.TrimPrefix(b, []byte(`"`))
 		b = bytes.TrimSuffix(b, []byte(`"`))
