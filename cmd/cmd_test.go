@@ -19,8 +19,12 @@ func TestPlain(t *testing.T) {
 
 	require.NoError(t, cmd.Execute())
 	assert.Equal(t, `availability_zone_names = ["us-west-1a"]
-docker_ports            = [{ external = 8300, internal = 8300, protocol = "tcp" }]
-image_id                = null
+docker_ports = [{
+  external = 8300
+  internal = 8300
+  protocol = "tcp"
+}]
+image_id = null
 `, actual.String())
 }
 
@@ -62,8 +66,12 @@ func TestAutoAssign(t *testing.T) {
 
 	require.NoError(t, cmd.Execute())
 	assert.Equal(t, `availability_zone_names = ["my-zone"]
-docker_ports            = [{ external = 80, internal = 80, protocol = "tcp" }]
-image_id                = "abc123"
+docker_ports = [{
+  external = 80
+  internal = 80
+  protocol = "tcp"
+}]
+image_id = "abc123"
 `, actual.String())
 }
 
@@ -76,8 +84,12 @@ func TestVar(t *testing.T) {
 
 	require.NoError(t, cmd.Execute())
 	assert.Equal(t, `availability_zone_names = ["my-zone"]
-docker_ports            = [{ external = 80, internal = 80, protocol = "tcp" }]
-image_id                = "abc123"
+docker_ports = [{
+  external = 80
+  internal = 80
+  protocol = "tcp"
+}]
+image_id = "abc123"
 `, actual.String())
 }
 
@@ -101,8 +113,12 @@ func TestVarFile(t *testing.T) {
 
 	require.NoError(t, cmd.Execute())
 	assert.Equal(t, `availability_zone_names = ["us-west-1a"]
-docker_ports            = [{ external = 8300, internal = 8300, protocol = "tcp" }]
-image_id                = "xyz"
+docker_ports = [{
+  external = 8300
+  internal = 8300
+  protocol = "tcp"
+}]
+image_id = "xyz"
 `, actual.String())
 }
 
@@ -116,4 +132,3 @@ func TestVarFileError(t *testing.T) {
 	assert.Error(t, cmd.Execute())
 	assert.Contains(t, actual.String(), `Error: tfvar: failed to parse 'testdata/bad.tfvars'`)
 }
-

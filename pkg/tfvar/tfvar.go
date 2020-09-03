@@ -7,6 +7,7 @@ import (
 	"io"
 
 	"github.com/cockroachdb/errors"
+	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/hashicorp/hcl/v2/hclwrite"
 	"github.com/hashicorp/terraform/configs"
 	"github.com/zclconf/go-cty/cty"
@@ -57,7 +58,8 @@ func WriteAsEnvVars(w io.Writer, vars []Variable) error {
 		val := convertNull(v.Value)
 
 		t := hclwrite.TokensForValue(val)
-		b := t.Bytes()
+		t = oneliner(t)
+		b := hclwrite.Format(t.Bytes())
 		b = bytes.TrimPrefix(b, []byte(`"`))
 		b = bytes.TrimSuffix(b, []byte(`"`))
 
@@ -68,6 +70,31 @@ func WriteAsEnvVars(w io.Writer, vars []Variable) error {
 	}
 
 	return we
+}
+
+func oneliner(original hclwrite.Tokens) hclwrite.Tokens {
+	var toks hclwrite.Tokens
+
+	for i, t := range original {
+		if t.Type != hclsyntax.TokenNewline {
+			toks = append(toks, t)
+			continue
+		}
+
+		// https://github.com/hashicorp/hcl/blob/v2.6.0/hclwrite/generate.go#L117-L156
+		// Newline only exists in map/object type (between hclsyntax.TokenOBrace and hclsyntax.TokenCBrace).
+		if original[i-1].Type == hclsyntax.TokenOBrace || original[i+1].Type == hclsyntax.TokenCBrace {
+			continue
+		}
+
+		// Replace newline with comma.
+		toks = append(toks, &hclwrite.Token{
+			Type:  hclsyntax.TokenComma,
+			Bytes: []byte{','},
+		})
+	}
+
+	return toks
 }
 
 // WriteAsTFVars outputs the given vars in Terraform's variable definitions format, e.g.
