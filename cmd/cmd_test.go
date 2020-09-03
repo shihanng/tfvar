@@ -37,7 +37,7 @@ func TestEnvVar(t *testing.T) {
 
 	require.NoError(t, cmd.Execute())
 	assert.Equal(t, `export TF_VAR_availability_zone_names='["us-west-1a"]'
-export TF_VAR_docker_ports='[{external=8300,internal=8300,protocol="tcp"}]'
+export TF_VAR_docker_ports='[{ external = 8300, internal = 8300, protocol = "tcp" }]'
 export TF_VAR_image_id=''
 `, actual.String())
 }
