@@ -84,6 +84,18 @@ variable "docker_ports" {
     image_id                = "xyz"
     ```
 
+- Multiple files can be specified via providing more `--var-file` options, variables overrides as for `terraform` command.
+    ```
+    $ cat my.tfvars
+    image_id = "xyz"
+
+    $ cat other.tfvars
+    image_id = "abc"
+
+    $ tfvar . --var-file my.tfvars --var-file other.tfvars
+    image_id = "abc"
+  ```
+
 For more info, checkout the `--help` page:
 
 ```
@@ -99,6 +111,7 @@ Flags:
                          variable definitions files e.g. terraform.tfvars[.json] *.auto.tfvars[.json]
   -d, --debug            Print debug log on stderr
   -e, --env-var          Print output in export TF_VAR_image_id=ami-abc123 format
+  --var-file             Reads variable file, multiple files can be provided
   -h, --help             help for tfvar
       --ignore-default   Do not use defined default values
       --version          version for tfvar
