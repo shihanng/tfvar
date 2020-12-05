@@ -59,6 +59,9 @@ image_id                = null
 func TestAutoAssign(t *testing.T) {
 	os.Args = strings.Fields("tfvar testdata -a")
 	os.Setenv("TF_VAR_image_id", "abc123")
+	defer func() {
+		require.NoError(t, os.Unsetenv("TF_VAR_image_id"))
+	}()
 
 	var actual bytes.Buffer
 	cmd, sync := New(&actual, "dev")
@@ -76,7 +79,7 @@ image_id = "abc123"
 }
 
 func TestVar(t *testing.T) {
-	os.Args = strings.Fields("tfvar testdata -a --var='image_id=abc123' --var='unknown=xxx'")
+	os.Args = strings.Fields("tfvar testdata -a --var=image_id=ignore_me --var=unknown=xxx --var=image_id=abc123")
 
 	var actual bytes.Buffer
 	cmd, sync := New(&actual, "dev")
@@ -94,14 +97,14 @@ image_id = "abc123"
 }
 
 func TestVarError(t *testing.T) {
-	os.Args = strings.Fields("tfvar testdata -a --var='unknown'")
+	os.Args = strings.Fields("tfvar testdata -a --var=unknown")
 
 	var actual bytes.Buffer
 	cmd, sync := New(&actual, "dev")
 	defer sync()
 
 	assert.Error(t, cmd.Execute())
-	assert.Contains(t, actual.String(), `Error: tfvar: bad var string ''unknown''`)
+	assert.Contains(t, actual.String(), `Error: tfvar: bad var string 'unknown'`)
 }
 
 func TestVarFile(t *testing.T) {
