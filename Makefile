@@ -9,7 +9,7 @@ test: ## Run tests
 	go test -covermode atomic -coverprofile=profile.cov -race -v ./... -count=1
 
 lint: ## Run GolangCI-Lint
-	docker run --rm -v $$(pwd):/app -w /app golangci/golangci-lint:latest golangci-lint run -v --timeout 120s
+	docker run --rm -v $$(pwd):/app -w /app golangci/golangci-lint:latest golangci-lint run -v
 
 mod-check: ## Run check on go mod tidy
 	go mod tidy && git --no-pager diff --exit-code -- go.mod go.sum
