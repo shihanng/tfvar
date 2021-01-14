@@ -107,14 +107,17 @@ Usage:
   tfvar [DIR] [flags]
 
 Flags:
-  -a, --auto-assign      Use values from environment variables TF_VAR_* and
-                         variable definitions files e.g. terraform.tfvars[.json] *.auto.tfvars[.json]
-  -d, --debug            Print debug log on stderr
-  -e, --env-var          Print output in export TF_VAR_image_id=ami-abc123 format
-  --var-file             Reads variable file, multiple files can be provided
-  -h, --help             help for tfvar
-      --ignore-default   Do not use defined default values
-      --version          version for tfvar
+  -a, --auto-assign            Use values from environment variables TF_VAR_* and
+                               variable definitions files e.g. terraform.tfvars[.json] *.auto.tfvars[.json]
+  -d, --debug                  Print debug log on stderr
+  -e, --env-var                Print output in export TF_VAR_image_id=ami-abc123 format
+  -h, --help                   help for tfvar
+      --ignore-default         Do not use defined default values
+      --var stringArray        Set a variable in the generated definitions.
+                               This flag can be set multiple times.
+      --var-file stringArray   Set variables from a file.
+                               This flag can be set multiple times.
+  -v, --version                version for tfvar
 ```
 
 
