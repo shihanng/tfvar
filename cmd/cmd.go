@@ -52,7 +52,8 @@ variable definitions files e.g. terraform.tfvars[.json] *.auto.tfvars[.json]`)
 	rootCmd.PersistentFlags().Bool(flagNoDefault, false, "Do not use defined default values")
 	rootCmd.PersistentFlags().StringArray(flagVar, []string{}, `Set a variable in the generated definitions.
 This flag can be set multiple times.`)
-	rootCmd.PersistentFlags().StringArray(flagVarFile, []string{}, `Set variables from a file.`)
+	rootCmd.PersistentFlags().StringArray(flagVarFile, []string{}, `Set variables from a file.
+This flag can be set multiple times.`)
 
 	return rootCmd, func() {
 		if r.log != nil {
