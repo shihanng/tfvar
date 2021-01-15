@@ -143,7 +143,6 @@ image_id = "abc"
 `, actual.String())
 }
 
-
 func TestVarFileError(t *testing.T) {
 	os.Args = strings.Fields("tfvar testdata --var-file testdata/bad.tfvars")
 
