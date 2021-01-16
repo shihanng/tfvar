@@ -25,6 +25,7 @@ docker_ports = [{
   protocol = "tcp"
 }]
 image_id = null
+password = null
 `, actual.String())
 }
 
@@ -39,6 +40,7 @@ func TestEnvVar(t *testing.T) {
 	assert.Equal(t, `export TF_VAR_availability_zone_names='["us-west-1a"]'
 export TF_VAR_docker_ports='[{ external = 8300, internal = 8300, protocol = "tcp" }]'
 export TF_VAR_image_id=''
+export TF_VAR_password=''
 `, actual.String())
 }
 
@@ -53,15 +55,17 @@ func TestIgnoreDefault(t *testing.T) {
 	assert.Equal(t, `availability_zone_names = null
 docker_ports            = null
 image_id                = null
+password                = null
 `, actual.String())
 }
 
 func TestAutoAssign(t *testing.T) {
 	os.Args = strings.Fields("tfvar testdata -a")
-	os.Setenv("TF_VAR_image_id", "abc123")
-	defer func() {
-		require.NoError(t, os.Unsetenv("TF_VAR_image_id"))
-	}()
+	unsetImageId := setenv(t, "TF_VAR_image_id", "abc123")
+	defer unsetImageId()
+
+	unsetPassword := setenv(t, "TF_VAR_password", "secret")
+	defer unsetPassword()
 
 	var actual bytes.Buffer
 	cmd, sync := New(&actual, "dev")
@@ -75,11 +79,20 @@ docker_ports = [{
   protocol = "tcp"
 }]
 image_id = "abc123"
+password = "secret"
 `, actual.String())
 }
 
+func setenv(t *testing.T, key, value string) func() {
+	require.NoError(t, os.Setenv(key, value))
+
+	return func() {
+		require.NoError(t, os.Unsetenv(key))
+	}
+}
+
 func TestVar(t *testing.T) {
-	os.Args = strings.Fields("tfvar testdata -a --var=image_id=ignore_me --var=unknown=xxx --var=image_id=abc123")
+	os.Args = strings.Fields("tfvar testdata -a --var=image_id=ignore_me --var=unknown=xxx --var=image_id=abc123 --var=password=secret")
 
 	var actual bytes.Buffer
 	cmd, sync := New(&actual, "dev")
@@ -93,6 +106,7 @@ docker_ports = [{
   protocol = "tcp"
 }]
 image_id = "abc123"
+password = "secret"
 `, actual.String())
 }
 
@@ -122,6 +136,7 @@ docker_ports = [{
   protocol = "tcp"
 }]
 image_id = "xyz"
+password = null
 `, actual.String())
 }
 
@@ -140,6 +155,7 @@ docker_ports = [{
   protocol = "tcp"
 }]
 image_id = "abc"
+password = "secret"
 `, actual.String())
 }
 

@@ -44,3 +44,9 @@ variable "docker_ports" {
     }
   ]
 }
+
+variable "password" {
+  type        = string
+  description = "the root password to use with the database"
+  sensitive   = true
+}
