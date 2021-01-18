@@ -25,7 +25,7 @@ archives:
       - README*
 
 brews:
-  - github:
+  - tap:
       owner: shihanng
       name: homebrew-tfvar
     commit_author:
