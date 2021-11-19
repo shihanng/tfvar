@@ -16,8 +16,10 @@ const (
 	flagDebug      = "debug"
 	flagEnvVar     = "env-var"
 	flagNoDefault  = "ignore-default"
+	flagResource   = "resource"
 	flagVar        = "var"
 	flagVarFile    = "var-file"
+	flagWorkspace  = "workspace"
 )
 
 // New returns a new instance of cobra.Command for tfvar. Usage:
@@ -49,6 +51,8 @@ one would write it in variable definitions files (.tfvars).
 variable definitions files e.g. terraform.tfvars[.json] *.auto.tfvars[.json]`)
 	rootCmd.PersistentFlags().BoolP(flagDebug, "d", false, "Print debug log on stderr")
 	rootCmd.PersistentFlags().BoolP(flagEnvVar, "e", false, "Print output in export TF_VAR_image_id=ami-abc123 format")
+	rootCmd.PersistentFlags().BoolP(flagResource, "r", false, "Print output in hashicorp/tfe tfe_variable resource format")
+	rootCmd.PersistentFlags().BoolP(flagWorkspace, "w", false, "Print output variables as payloads for workspace API")
 	rootCmd.PersistentFlags().Bool(flagNoDefault, false, "Do not use defined default values")
 	rootCmd.PersistentFlags().StringArray(flagVar, []string{}, `Set a variable in the generated definitions.
 This flag can be set multiple times.`)
