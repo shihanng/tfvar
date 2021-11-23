@@ -117,7 +117,20 @@ func WriteAsWorkspacePayload(w io.Writer, vars []Variable) error {
 	rootBody := f.Body()
 
 	for _, v := range vars {
-		rootBody.SetAttributeValue(v.Name, v.Value)
+		json := rootBody.AppendNewBlock("", nil)
+		jsonBody := json.Body()
+		dataBlock := jsonBody.AppendNewBlock("data", nil)
+		dataBody := dataBlock.Body()
+		dataBody.SetAttributeValue("type", cty.StringVal("vars"))
+		attBlock := dataBody.AppendNewBlock("Attributes", nil)
+		attBody := attBlock.Body()
+		attBody.SetAttributeValue("key", cty.StringVal(v.Name))
+		attBody.SetAttributeValue("value", v.Value)
+		attBody.SetAttributeValue("description", cty.StringVal(v.Description))
+		attBody.SetAttributeValue("category", cty.StringVal("terraform"))
+		attBody.SetAttributeValue("hcl", cty.BoolVal(false))
+		attBody.SetAttributeValue("sensitive", cty.BoolVal(false))
+		rootBody.AppendNewline()
 	}
 
 	_, err := f.WriteTo(w)
