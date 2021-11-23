@@ -126,6 +126,15 @@ func (r *runner) rootRunE(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return errors.Wrap(err, "cmd: get flag --auto-assign")
 	}
+	isWorkspace, err := cmd.PersistentFlags().GetBool(flagWorkspace)
+	if err != nil {
+		return errors.Wrap(err, "cmd: get flag --workspace")
+	}
+
+	isResource, err := cmd.PersistentFlags().GetBool(flagResource)
+	if err != nil {
+		return errors.Wrap(err, "cmd: get flag --resource")
+	}
 
 	unparseds := make(map[string]tfvar.UnparsedVariableValue)
 
@@ -176,5 +185,14 @@ func (r *runner) rootRunE(cmd *cobra.Command, args []string) error {
 		writer = tfvar.WriteAsEnvVars
 	}
 
+	if isWorkspace {
+		r.log.Debug("Print outputs in Workspace API payload format")
+		writer = tfvar.WriteAsWorkspacePayload
+	}
+
+	if isResource {
+		r.log.Debug("Print outputs in tfe_resource format")
+		writer = tfvar.WriteAsTFE_Resource
+	}
 	return writer(r.out, vars)
 }

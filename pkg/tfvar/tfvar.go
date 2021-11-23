@@ -18,8 +18,9 @@ import (
 //      type = string
 //    }
 type Variable struct {
-	Name  string
-	Value cty.Value
+	Name        string
+	Value       cty.Value
+	Description string
 
 	parsingMode configs.VariableParsingMode
 }
@@ -37,8 +38,9 @@ func Load(dir string) ([]Variable, error) {
 
 	for _, v := range modules.Variables {
 		variables = append(variables, Variable{
-			Name:  v.Name,
-			Value: v.Default,
+			Name:        v.Name,
+			Value:       v.Default,
+			Description: v.Description,
 
 			parsingMode: v.ParsingMode,
 		})
@@ -110,7 +112,36 @@ func WriteAsTFVars(w io.Writer, vars []Variable) error {
 	_, err := f.WriteTo(w)
 	return errors.Wrap(err, "tfvar: failed to write as tfvars")
 }
+func WriteAsWorkspacePayload(w io.Writer, vars []Variable) error {
+	f := hclwrite.NewEmptyFile()
+	rootBody := f.Body()
 
+	for _, v := range vars {
+		rootBody.SetAttributeValue(v.Name, v.Value)
+	}
+
+	_, err := f.WriteTo(w)
+	return errors.Wrap(err, "workspacePayload: failed to write as workspace API payload")
+}
+func WriteAsTFE_Resource(w io.Writer, vars []Variable) error {
+	f := hclwrite.NewEmptyFile()
+	rootBody := f.Body()
+
+	for _, v := range vars {
+		rootBody.AppendNewline()
+		resourceBlock := rootBody.AppendNewBlock("resource", []string{"tfe_variable", v.Name})
+		resourceBody := resourceBlock.Body()
+		resourceBody.SetAttributeValue("value", v.Value)
+		resourceBody.SetAttributeValue("sensitive", cty.BoolVal(false))
+		resourceBody.SetAttributeValue("description", cty.StringVal(v.Description))
+		resourceBody.SetAttributeValue("workspace_id", cty.NilVal)
+		resourceBody.SetAttributeValue("category", cty.StringVal("terraform"))
+
+	}
+
+	_, err := f.WriteTo(w)
+	return errors.Wrap(err, "tfe_variable: failed to write as tfe_variable resource")
+}
 func convertNull(v cty.Value) cty.Value {
 	if v.IsNull() {
 		return cty.StringVal("")
