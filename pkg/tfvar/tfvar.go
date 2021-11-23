@@ -3,6 +3,7 @@ package tfvar
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 
@@ -113,28 +114,35 @@ func WriteAsTFVars(w io.Writer, vars []Variable) error {
 	return errors.Wrap(err, "tfvar: failed to write as tfvars")
 }
 func WriteAsWorkspacePayload(w io.Writer, vars []Variable) error {
-	f := hclwrite.NewEmptyFile()
-	rootBody := f.Body()
-
+	var payload error
+	type SimpleJSONValue struct {
+		cty.Value
+	}
 	for _, v := range vars {
-		json := rootBody.AppendNewBlock("", nil)
-		jsonBody := json.Body()
-		dataBlock := jsonBody.AppendNewBlock("data", nil)
-		dataBody := dataBlock.Body()
-		dataBody.SetAttributeValue("type", cty.StringVal("vars"))
-		attBlock := dataBody.AppendNewBlock("Attributes", nil)
-		attBody := attBlock.Body()
-		attBody.SetAttributeValue("key", cty.StringVal(v.Name))
-		attBody.SetAttributeValue("value", v.Value)
-		attBody.SetAttributeValue("description", cty.StringVal(v.Description))
-		attBody.SetAttributeValue("category", cty.StringVal("terraform"))
-		attBody.SetAttributeValue("hcl", cty.BoolVal(false))
-		attBody.SetAttributeValue("sensitive", cty.BoolVal(false))
-		rootBody.AppendNewline()
+
+		wrappedValue := SimpleJSONValue{v.Value}
+		jsonValue, payload := json.Marshal(wrappedValue)
+		data := fmt.Sprintf(`{
+			"data": {
+				"type": "vars",
+				"attributes": {
+					"key":        " %s",
+					"value":       "%s",
+					"description": "%s",
+					"category":    "%s",
+					"hcl":         %s,
+					"sensitive":   %s,
+				}
+			}
+		}
+		`, v.Name, jsonValue, v.Description, "terraform", "true", "false")
+		if payload == nil {
+			_, err := fmt.Fprintf(w, "%s", data)
+			payload = errors.Wrap(err, "tfvar: unexpected writing payload")
+		}
 	}
 
-	_, err := f.WriteTo(w)
-	return errors.Wrap(err, "workspacePayload: failed to write as workspace API payload")
+	return payload
 }
 func WriteAsTFE_Resource(w io.Writer, vars []Variable) error {
 	f := hclwrite.NewEmptyFile()
