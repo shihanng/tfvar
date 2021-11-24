@@ -140,7 +140,7 @@ func WriteAsWorkspacePayload(w io.Writer, vars []Variable) error {
 				}
 			}
 		}
-		`, v.Name, string(b), v.Description, "terraform", "true", "false")
+		`, v.Name, string(b), v.Description, "terraform", "false", "false")
 		if payload == nil {
 			_, err := fmt.Fprintf(w, "%s", data)
 			payload = errors.Wrap(err, "tfvar: unexpected writing payload")
