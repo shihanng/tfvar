@@ -21,6 +21,7 @@ type Variable struct {
 	Name        string
 	Value       cty.Value
 	Description string
+	Sensitive   bool
 
 	parsingMode configs.VariableParsingMode
 }
@@ -41,6 +42,7 @@ func Load(dir string) ([]Variable, error) {
 			Name:        v.Name,
 			Value:       v.Default,
 			Description: v.Description,
+			Sensitive:   v.Sensitive,
 
 			parsingMode: v.ParsingMode,
 		})
@@ -137,7 +139,7 @@ func WriteAsWorkspacePayload(w io.Writer, vars []Variable) error {
 				}
 			}
 		}
-		`, v.Name, string(b), v.Description, "terraform", "false", "false")
+		`, v.Name, string(b), v.Description, "terraform", "false", v.Sensitive)
 		if payload == nil {
 			_, err := fmt.Fprintf(w, "%s", data)
 			payload = errors.Wrap(err, "tfvar: unexpected writing payload")
@@ -156,7 +158,7 @@ func WriteAsTFE_Resource(w io.Writer, vars []Variable) error {
 		resourceBody := resourceBlock.Body()
 		resourceBody.SetAttributeValue("key", cty.StringVal(v.Name))
 		resourceBody.SetAttributeValue("value", v.Value)
-		resourceBody.SetAttributeValue("sensitive", cty.BoolVal(false))
+		resourceBody.SetAttributeValue("sensitive", cty.BoolVal(v.Sensitive))
 		resourceBody.SetAttributeValue("description", cty.StringVal(v.Description))
 		resourceBody.SetAttributeValue("workspace_id", cty.NilVal)
 		resourceBody.SetAttributeValue("category", cty.StringVal("terraform"))
