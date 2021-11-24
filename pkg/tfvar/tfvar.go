@@ -135,7 +135,7 @@ func WriteAsWorkspacePayload(w io.Writer, vars []Variable) error {
 					"description": "%s",
 					"category":    "%s",
 					"hcl":         %s,
-					"sensitive":   %s
+					"sensitive":   %v
 				}
 			}
 		}

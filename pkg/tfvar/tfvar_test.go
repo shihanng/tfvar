@@ -156,7 +156,7 @@ resource "tfe_variable" "instance_name" {
 resource "tfe_variable" "password" {
   key          = "password"
   value        = null
-  sensitive    = false
+  sensitive    = true
   description  = "the root password to use with the database"
   workspace_id = null
   category     = "terraform"
@@ -243,7 +243,7 @@ func TestWriteAsWorkspacePayload(t *testing.T) {
 					"description": "the root password to use with the database",
 					"category":    "terraform",
 					"hcl":         false,
-					"sensitive":   false
+					"sensitive":   true
 				}
 			}
 		}
