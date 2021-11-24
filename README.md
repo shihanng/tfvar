@@ -102,8 +102,14 @@ You can use `jq` to filter variables by key name.
 
 ```shell
 
-./tfvar  -w pkg/tfvar/testdata/defaults/. | jq '. | select(.data.attributes.key == "region")'
+$ tfvar  -w pkg/tfvar/testdata/defaults/. | jq '. | select(.data.attributes.key == "region")'
+{
+	"data": {
+		...
+	}
+}
 ```
+
 For more info, checkout the `--help` page:
 
 ```
