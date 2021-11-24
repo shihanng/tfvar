@@ -3,7 +3,6 @@ package tfvar
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"io"
 
@@ -115,27 +114,33 @@ func WriteAsTFVars(w io.Writer, vars []Variable) error {
 }
 func WriteAsWorkspacePayload(w io.Writer, vars []Variable) error {
 	var payload error
-	type SimpleJSONValue struct {
-		cty.Value
-	}
-	for _, v := range vars {
+	// type SimpleJSONValue struct {
+	// 	cty.Value
+	// }
 
-		wrappedValue := SimpleJSONValue{v.Value}
-		jsonValue, payload := json.Marshal(wrappedValue)
+	for _, v := range vars {
+		val := convertNull(v.Value)
+
+		t := hclwrite.TokensForValue(val)
+		t = oneliner(t)
+		b := hclwrite.Format(t.Bytes())
+		b = bytes.TrimPrefix(b, []byte(`"`))
+		b = bytes.TrimSuffix(b, []byte(`"`))
+		b = bytes.ReplaceAll(b, []byte(`"`), []byte(`'`))
 		data := fmt.Sprintf(`{
 			"data": {
 				"type": "vars",
 				"attributes": {
-					"key":        " %s",
+					"key":         "%s",
 					"value":       "%s",
 					"description": "%s",
 					"category":    "%s",
 					"hcl":         %s,
-					"sensitive":   %s,
+					"sensitive":   %s
 				}
 			}
 		}
-		`, v.Name, jsonValue, v.Description, "terraform", "true", "false")
+		`, v.Name, string(b), v.Description, "terraform", "true", "false")
 		if payload == nil {
 			_, err := fmt.Fprintf(w, "%s", data)
 			payload = errors.Wrap(err, "tfvar: unexpected writing payload")
