@@ -99,10 +99,8 @@ variable "docker_ports" {
 - The `-r, --resource` flag outputs all variables as terraform resources for the `tfe_variable resource` found in the `tfe` provider <https://registry.terraform.io/providers/hashicorp/tfe/latest/docs/resources/variable>
 
 - The `-w, --workspace` flag outputs all variables in the payload format for the API <https://www.terraform.io/docs/cloud/api/workspace-variables.html#sample-payload>.  You can use `jq` to filter variables by key name.
-
-
-    ```shell
-    $ tfvar  -w pkg/tfvar/testdata/defaults/. | jq '. | select(.data.attributes.key == "region")'
+    ```
+    $ tfvar  -w . | jq '. | select(.data.attributes.key == "region")'
     {
 	   "data": {
 		   ...

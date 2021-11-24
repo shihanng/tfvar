@@ -126,6 +126,7 @@ func (r *runner) rootRunE(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return errors.Wrap(err, "cmd: get flag --auto-assign")
 	}
+
 	isWorkspace, err := cmd.PersistentFlags().GetBool(flagWorkspace)
 	if err != nil {
 		return errors.Wrap(err, "cmd: get flag --workspace")

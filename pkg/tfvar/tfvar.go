@@ -114,9 +114,6 @@ func WriteAsTFVars(w io.Writer, vars []Variable) error {
 }
 func WriteAsWorkspacePayload(w io.Writer, vars []Variable) error {
 	var payload error
-	// type SimpleJSONValue struct {
-	// 	cty.Value
-	// }
 
 	for _, v := range vars {
 		val := convertNull(v.Value)
