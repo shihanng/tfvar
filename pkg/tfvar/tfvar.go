@@ -157,6 +157,7 @@ func WriteAsTFE_Resource(w io.Writer, vars []Variable) error {
 		rootBody.AppendNewline()
 		resourceBlock := rootBody.AppendNewBlock("resource", []string{"tfe_variable", v.Name})
 		resourceBody := resourceBlock.Body()
+		resourceBody.SetAttributeValue("key", cty.StringVal(v.Name))
 		resourceBody.SetAttributeValue("value", v.Value)
 		resourceBody.SetAttributeValue("sensitive", cty.BoolVal(false))
 		resourceBody.SetAttributeValue("description", cty.StringVal(v.Description))
