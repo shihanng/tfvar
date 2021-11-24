@@ -96,7 +96,9 @@ variable "docker_ports" {
     image_id = "abc"
   ```
 
-- You can use the `-w, -workspace` flag to out put all variables in the payload format for the API <https://www.terraform.io/docs/cloud/api/workspace-variables.html#sample-payload>
+-
+
+- The `-w, -workspace` flag outputs all variables in the payload format for the API <https://www.terraform.io/docs/cloud/api/workspace-variables.html#sample-payload>
 
 You can use `jq` to filter variables by key name.
 
