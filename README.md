@@ -96,6 +96,14 @@ variable "docker_ports" {
     image_id = "abc"
   ```
 
+- You can use the `-w, -workspace` flag to out put all variables in the payload format for the API <https://www.terraform.io/docs/cloud/api/workspace-variables.html#sample-payload>
+
+You can use `jq` to filter variables by key name.
+
+```shell
+
+./tfvar  -w pkg/tfvar/testdata/defaults/. | jq '. | select(.data.attributes.key == "region")'
+```
 For more info, checkout the `--help` page:
 
 ```
@@ -113,11 +121,13 @@ Flags:
   -e, --env-var                Print output in export TF_VAR_image_id=ami-abc123 format
   -h, --help                   help for tfvar
       --ignore-default         Do not use defined default values
+  -r, --resource               Print output in hashicorp/tfe tfe_variable resource format
       --var stringArray        Set a variable in the generated definitions.
                                This flag can be set multiple times.
       --var-file stringArray   Set variables from a file.
                                This flag can be set multiple times.
   -v, --version                version for tfvar
+  -w, --workspace              Print output variables as payloads for workspace API
 ```
 
 
