@@ -98,3 +98,162 @@ region        = null
 `
 	assert.Equal(t, expected, buf.String())
 }
+func TestWriteAsTFE_Resource(t *testing.T) {
+	vars, err := Load("testdata/defaults")
+	require.NoError(t, err)
+
+	sort.Slice(vars, func(i, j int) bool { return vars[i].Name < vars[j].Name })
+
+	var buf bytes.Buffer
+	assert.NoError(t, WriteAsTFE_Resource(&buf, vars))
+
+	expected := `
+resource "tfe_variable" "availability_zone_names" {
+  value        = ["us-west-1a"]
+  sensitive    = false
+  description  = ""
+  workspace_id = null
+  category     = "terraform"
+}
+
+resource "tfe_variable" "aws_amis" {
+  value = {
+    eu-west-1 = "ami-b1cf19c6"
+    us-east-1 = "ami-de7ab6b6"
+    us-west-1 = "ami-3f75767a"
+    us-west-2 = "ami-21f78e11"
+  }
+  sensitive    = false
+  description  = ""
+  workspace_id = null
+  category     = "terraform"
+}
+
+resource "tfe_variable" "docker_ports" {
+  value = [{
+    external = 8300
+    internal = 8301
+    protocol = "tcp"
+  }]
+  sensitive    = false
+  description  = ""
+  workspace_id = null
+  category     = "terraform"
+}
+
+resource "tfe_variable" "instance_name" {
+  value        = "my-instance"
+  sensitive    = false
+  description  = ""
+  workspace_id = null
+  category     = "terraform"
+}
+
+resource "tfe_variable" "password" {
+  value        = null
+  sensitive    = false
+  description  = "the root password to use with the database"
+  workspace_id = null
+  category     = "terraform"
+}
+
+resource "tfe_variable" "region" {
+  value        = null
+  sensitive    = false
+  description  = ""
+  workspace_id = null
+  category     = "terraform"
+}
+`
+	assert.Equal(t, expected, buf.String())
+}
+func TestWriteAsWorkspacePayload(t *testing.T) {
+	vars, err := Load("testdata/defaults")
+	require.NoError(t, err)
+
+	sort.Slice(vars, func(i, j int) bool { return vars[i].Name < vars[j].Name })
+
+	var buf bytes.Buffer
+	assert.NoError(t, WriteAsWorkspacePayload(&buf, vars))
+
+	expected := `{
+			"data": {
+				"type": "vars",
+				"attributes": {
+					"key":         "availability_zone_names",
+					"value":       "['us-west-1a']",
+					"description": "",
+					"category":    "terraform",
+					"hcl":         false,
+					"sensitive":   false
+				}
+			}
+		}
+		{
+			"data": {
+				"type": "vars",
+				"attributes": {
+					"key":         "aws_amis",
+					"value":       "{ eu-west-1 = 'ami-b1cf19c6', us-east-1 = 'ami-de7ab6b6', us-west-1 = 'ami-3f75767a', us-west-2 = 'ami-21f78e11' }",
+					"description": "",
+					"category":    "terraform",
+					"hcl":         false,
+					"sensitive":   false
+				}
+			}
+		}
+		{
+			"data": {
+				"type": "vars",
+				"attributes": {
+					"key":         "docker_ports",
+					"value":       "[{ external = 8300, internal = 8301, protocol = 'tcp' }]",
+					"description": "",
+					"category":    "terraform",
+					"hcl":         false,
+					"sensitive":   false
+				}
+			}
+		}
+		{
+			"data": {
+				"type": "vars",
+				"attributes": {
+					"key":         "instance_name",
+					"value":       "my-instance",
+					"description": "",
+					"category":    "terraform",
+					"hcl":         false,
+					"sensitive":   false
+				}
+			}
+		}
+		{
+			"data": {
+				"type": "vars",
+				"attributes": {
+					"key":         "password",
+					"value":       "",
+					"description": "the root password to use with the database",
+					"category":    "terraform",
+					"hcl":         false,
+					"sensitive":   false
+				}
+			}
+		}
+		{
+			"data": {
+				"type": "vars",
+				"attributes": {
+					"key":         "region",
+					"value":       "",
+					"description": "",
+					"category":    "terraform",
+					"hcl":         false,
+					"sensitive":   false
+				}
+			}
+		}
+		`
+	assert.Equal(t, expected, buf.String())
+}
