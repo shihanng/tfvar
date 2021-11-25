@@ -3,6 +3,7 @@ package tfvar
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 
@@ -112,6 +113,24 @@ func WriteAsTFVars(w io.Writer, vars []Variable) error {
 	return errors.Wrap(err, "tfvar: failed to write as tfvars")
 }
 
+type workspacePayload struct {
+	Data workspaceData `json:"data"`
+}
+
+type workspaceData struct {
+	Type       string              `json:"type"`
+	Attributes workspaceAttributes `json:"attributes"`
+}
+
+type workspaceAttributes struct {
+	Key         string `json:"key"`
+	Value       string `json:"value"`
+	Description string `json:"description"`
+	Category    string `json:"category"`
+	HCL         bool   `json:"hcl"`
+	Sensitive   bool   `json:"sensitive"`
+}
+
 func WriteAsWorkspacePayload(w io.Writer, vars []Variable) error {
 	for _, v := range vars {
 		val := convertNull(v.Value)
@@ -122,22 +141,25 @@ func WriteAsWorkspacePayload(w io.Writer, vars []Variable) error {
 		b = bytes.TrimPrefix(b, []byte(`"`))
 		b = bytes.TrimSuffix(b, []byte(`"`))
 		b = bytes.ReplaceAll(b, []byte(`"`), []byte(`'`))
-		data := fmt.Sprintf(`{
-			"data": {
-				"type": "vars",
-				"attributes": {
-					"key":         "%s",
-					"value":       "%s",
-					"description": "%s",
-					"category":    "%s",
-					"hcl":         %s,
-					"sensitive":   %v
-				}
-			}
-		}
-		`, v.Name, string(b), v.Description, "terraform", "false", v.Sensitive)
 
-		if _, err := fmt.Fprintf(w, "%s", data); err != nil {
+		payload := workspacePayload{
+			Data: workspaceData{
+				Type: "vars",
+				Attributes: workspaceAttributes{
+					Key:         v.Name,
+					Value:       string(b),
+					Description: v.Description,
+					Category:    "terraform",
+					HCL:         false,
+					Sensitive:   v.Sensitive,
+				},
+			},
+		}
+
+		enc := json.NewEncoder(w)
+		enc.SetIndent("", "  ")
+
+		if err := enc.Encode(payload); err != nil {
 			return errors.Wrap(err, "tfvar: unexpected error writing payload")
 		}
 	}
