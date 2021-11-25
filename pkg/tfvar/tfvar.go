@@ -115,8 +115,7 @@ func WriteAsTFVars(w io.Writer, vars []Variable) error {
 	return errors.Wrap(err, "tfvar: failed to write as tfvars")
 }
 func WriteAsWorkspacePayload(w io.Writer, vars []Variable) error {
-	var payload error
-
+	var data error
 	for _, v := range vars {
 		val := convertNull(v.Value)
 
@@ -140,13 +139,12 @@ func WriteAsWorkspacePayload(w io.Writer, vars []Variable) error {
 			}
 		}
 		`, v.Name, string(b), v.Description, "terraform", "false", v.Sensitive)
-		if payload == nil {
-			_, err := fmt.Fprintf(w, "%s", data)
-			payload = errors.Wrap(err, "tfvar: unexpected error writing payload")
+		if _, err := fmt.Fprintf(w, "%s", data); err != nil {
+			return errors.Wrap(err, "tfvar: unexpected error writing payload")
 		}
-	}
 
-	return payload
+	}
+	return data
 }
 func WriteAsTFE_Resource(w io.Writer, vars []Variable) error {
 	f := hclwrite.NewEmptyFile()
