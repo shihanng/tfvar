@@ -56,8 +56,6 @@ const varEnvPrefix = "TF_VAR_"
 // WriteAsEnvVars outputs the given vars in environment variables format, e.g.
 //    export TF_VAR_region='ap-northeast-1'
 func WriteAsEnvVars(w io.Writer, vars []Variable) error {
-	var we error
-
 	for _, v := range vars {
 		val := convertNull(v.Value)
 
@@ -67,13 +65,12 @@ func WriteAsEnvVars(w io.Writer, vars []Variable) error {
 		b = bytes.TrimPrefix(b, []byte(`"`))
 		b = bytes.TrimSuffix(b, []byte(`"`))
 
-		if we == nil {
-			_, err := fmt.Fprintf(w, "export %s%s='%s'\n", varEnvPrefix, v.Name, string(b))
-			we = errors.Wrap(err, "tfvar: unexpected writing export")
+		if _, err := fmt.Fprintf(w, "export %s%s='%s'\n", varEnvPrefix, v.Name, string(b)); err != nil {
+			return errors.Wrap(err, "tfvar: unexpected writing export")
 		}
 	}
 
-	return we
+	return nil
 }
 
 func oneliner(original hclwrite.Tokens) hclwrite.Tokens {
@@ -115,7 +112,6 @@ func WriteAsTFVars(w io.Writer, vars []Variable) error {
 	return errors.Wrap(err, "tfvar: failed to write as tfvars")
 }
 func WriteAsWorkspacePayload(w io.Writer, vars []Variable) error {
-	var data error
 	for _, v := range vars {
 		val := convertNull(v.Value)
 
@@ -144,7 +140,7 @@ func WriteAsWorkspacePayload(w io.Writer, vars []Variable) error {
 		}
 
 	}
-	return data
+	return nil
 }
 func WriteAsTFE_Resource(w io.Writer, vars []Variable) error {
 	f := hclwrite.NewEmptyFile()
