@@ -193,7 +193,7 @@ func (r *runner) rootRunE(cmd *cobra.Command, args []string) error {
 
 	if isResource {
 		r.log.Debug("Print outputs in tfe_resource format")
-		writer = tfvar.WriteAsTFE_Resource
+		writer = tfvar.WriteAsTFEResource
 	}
 	return writer(r.out, vars)
 }

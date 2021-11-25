@@ -98,14 +98,15 @@ region        = null
 `
 	assert.Equal(t, expected, buf.String())
 }
-func TestWriteAsTFE_Resource(t *testing.T) {
+
+func TestWriteAsTFEResource(t *testing.T) {
 	vars, err := Load("testdata/defaults")
 	require.NoError(t, err)
 
 	sort.Slice(vars, func(i, j int) bool { return vars[i].Name < vars[j].Name })
 
 	var buf bytes.Buffer
-	assert.NoError(t, WriteAsTFE_Resource(&buf, vars))
+	assert.NoError(t, WriteAsTFEResource(&buf, vars))
 
 	expected := `
 resource "tfe_variable" "availability_zone_names" {
@@ -171,8 +172,10 @@ resource "tfe_variable" "region" {
   category     = "terraform"
 }
 `
+
 	assert.Equal(t, expected, buf.String())
 }
+
 func TestWriteAsWorkspacePayload(t *testing.T) {
 	vars, err := Load("testdata/defaults")
 	require.NoError(t, err)
@@ -261,5 +264,6 @@ func TestWriteAsWorkspacePayload(t *testing.T) {
 			}
 		}
 		`
+
 	assert.Equal(t, expected, buf.String())
 }

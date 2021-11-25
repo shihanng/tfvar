@@ -111,6 +111,7 @@ func WriteAsTFVars(w io.Writer, vars []Variable) error {
 	_, err := f.WriteTo(w)
 	return errors.Wrap(err, "tfvar: failed to write as tfvars")
 }
+
 func WriteAsWorkspacePayload(w io.Writer, vars []Variable) error {
 	for _, v := range vars {
 		val := convertNull(v.Value)
@@ -135,14 +136,16 @@ func WriteAsWorkspacePayload(w io.Writer, vars []Variable) error {
 			}
 		}
 		`, v.Name, string(b), v.Description, "terraform", "false", v.Sensitive)
+
 		if _, err := fmt.Fprintf(w, "%s", data); err != nil {
 			return errors.Wrap(err, "tfvar: unexpected error writing payload")
 		}
-
 	}
+
 	return nil
 }
-func WriteAsTFE_Resource(w io.Writer, vars []Variable) error {
+
+func WriteAsTFEResource(w io.Writer, vars []Variable) error {
 	f := hclwrite.NewEmptyFile()
 	rootBody := f.Body()
 
@@ -156,12 +159,12 @@ func WriteAsTFE_Resource(w io.Writer, vars []Variable) error {
 		resourceBody.SetAttributeValue("description", cty.StringVal(v.Description))
 		resourceBody.SetAttributeValue("workspace_id", cty.NilVal)
 		resourceBody.SetAttributeValue("category", cty.StringVal("terraform"))
-
 	}
 
 	_, err := f.WriteTo(w)
 	return errors.Wrap(err, "tfe_variable: failed to write as tfe_variable resource")
 }
+
 func convertNull(v cty.Value) cty.Value {
 	if v.IsNull() {
 		return cty.StringVal("")
