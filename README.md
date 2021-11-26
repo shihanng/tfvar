@@ -64,10 +64,11 @@ variable "docker_ports" {
     ```
 
   - The `-r, --resource` flag outputs all variables as `tfe_variable`
-    Terraform resource of [Terraform Enterprise (tfe) provider](https://registry.terraform.io/providers/hashicorp/tfe/latest/docs/resources/variable).
+    resource of [Terraform Enterprise (tfe) provider](https://registry.terraform.io/providers/hashicorp/tfe/latest/docs/resources/variable).
 
-  - The `-w, --workspace` flag outputs all variables in the payload format for the API
-    <https://www.terraform.io/docs/cloud/api/workspace-variables.html#sample-payload>.
+  - The `-w, --workspace` flag outputs all variables in the payload format for the
+    [Workspace Variables API](https://www.terraform.io/docs/cloud/api/workspace-variables.html#sample-payload)
+    <https://www.terraform.io/docs/cloud/api/workspace-variables.html#sample-payload>
     which can used together with `jq` to filter variables by key name.
 
     ```
@@ -141,13 +142,13 @@ Flags:
   -e, --env-var                Print output in export TF_VAR_image_id=ami-abc123 format
   -h, --help                   help for tfvar
       --ignore-default         Do not use defined default values
-  -r, --resource               Print output in hashicorp/tfe tfe_variable resource format
+  -r, --resource               Print output in Terraform Enterprise (tfe) provider's tfe_variable resource format
       --var stringArray        Set a variable in the generated definitions.
                                This flag can be set multiple times.
       --var-file stringArray   Set variables from a file.
                                This flag can be set multiple times.
   -v, --version                version for tfvar
-  -w, --workspace              Print output variables as payloads for workspace API
+  -w, --workspace              Print output variables as payloads for Workspace Variables API
 ```
 
 
