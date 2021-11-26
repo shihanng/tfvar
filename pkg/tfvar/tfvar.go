@@ -18,8 +18,10 @@ import (
 //      type = string
 //    }
 type Variable struct {
-	Name  string
-	Value cty.Value
+	Name        string
+	Value       cty.Value
+	Description string
+	Sensitive   bool
 
 	parsingMode configs.VariableParsingMode
 }
@@ -37,8 +39,10 @@ func Load(dir string) ([]Variable, error) {
 
 	for _, v := range modules.Variables {
 		variables = append(variables, Variable{
-			Name:  v.Name,
-			Value: v.Default,
+			Name:        v.Name,
+			Value:       v.Default,
+			Description: v.Description,
+			Sensitive:   v.Sensitive,
 
 			parsingMode: v.ParsingMode,
 		})
@@ -110,7 +114,58 @@ func WriteAsTFVars(w io.Writer, vars []Variable) error {
 	_, err := f.WriteTo(w)
 	return errors.Wrap(err, "tfvar: failed to write as tfvars")
 }
+func WriteAsWorkspacePayload(w io.Writer, vars []Variable) error {
+	var data error
+	for _, v := range vars {
+		val := convertNull(v.Value)
 
+		t := hclwrite.TokensForValue(val)
+		t = oneliner(t)
+		b := hclwrite.Format(t.Bytes())
+		b = bytes.TrimPrefix(b, []byte(`"`))
+		b = bytes.TrimSuffix(b, []byte(`"`))
+		b = bytes.ReplaceAll(b, []byte(`"`), []byte(`'`))
+		data := fmt.Sprintf(`{
+			"data": {
+				"type": "vars",
+				"attributes": {
+					"key":         "%s",
+					"value":       "%s",
+					"description": "%s",
+					"category":    "%s",
+					"hcl":         %s,
+					"sensitive":   %v
+				}
+			}
+		}
+		`, v.Name, string(b), v.Description, "terraform", "false", v.Sensitive)
+		if _, err := fmt.Fprintf(w, "%s", data); err != nil {
+			return errors.Wrap(err, "tfvar: unexpected error writing payload")
+		}
+
+	}
+	return data
+}
+func WriteAsTFE_Resource(w io.Writer, vars []Variable) error {
+	f := hclwrite.NewEmptyFile()
+	rootBody := f.Body()
+
+	for _, v := range vars {
+		rootBody.AppendNewline()
+		resourceBlock := rootBody.AppendNewBlock("resource", []string{"tfe_variable", v.Name})
+		resourceBody := resourceBlock.Body()
+		resourceBody.SetAttributeValue("key", cty.StringVal(v.Name))
+		resourceBody.SetAttributeValue("value", v.Value)
+		resourceBody.SetAttributeValue("sensitive", cty.BoolVal(v.Sensitive))
+		resourceBody.SetAttributeValue("description", cty.StringVal(v.Description))
+		resourceBody.SetAttributeValue("workspace_id", cty.NilVal)
+		resourceBody.SetAttributeValue("category", cty.StringVal("terraform"))
+
+	}
+
+	_, err := f.WriteTo(w)
+	return errors.Wrap(err, "tfe_variable: failed to write as tfe_variable resource")
+}
 func convertNull(v cty.Value) cty.Value {
 	if v.IsNull() {
 		return cty.StringVal("")
