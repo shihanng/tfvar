@@ -52,13 +52,42 @@ variable "docker_ports" {
     docker_ports            = null
     image_id                = null
     ```
-- **tfvar** also provides output in environment variable formats:
+- **tfvar** also provides other output formats:
+
+  - In environment variable formats with `-e` flag:
+
     ```
     $ tfvar . -e
     export TF_VAR_availability_zone_names='["us-west-1a"]'
     export TF_VAR_docker_ports='[{ external = 8300, internal = 8300, protocol = "tcp" }]'
     export TF_VAR_image_id=''
     ```
+
+  - The `-r, --resource` flag outputs all variables as `tfe_variable`
+    resource of [Terraform Enterprise (tfe) provider](https://registry.terraform.io/providers/hashicorp/tfe/latest/docs/resources/variable).
+
+  - The `-w, --workspace` flag outputs all variables in the payload format for the
+    [Workspace Variables API](https://www.terraform.io/docs/cloud/api/workspace-variables.html#sample-payload)
+    <https://www.terraform.io/docs/cloud/api/workspace-variables.html#sample-payload>
+    which can used together with `jq` to filter variables by key name.
+
+    ```
+    $ tfvar -w . | jq '. | select(.data.attributes.key == "region")'
+    {
+      "data": {
+        "type": "vars",
+        "attributes": {
+          "key": "region",
+          "value": "",
+          "description": "",
+          "category": "terraform",
+          "hcl": false,
+          "sensitive": false
+        }
+      }
+    }
+    ```
+
 - There is also `--auto-assign` option for those who wants the values from `terraform.tfvars[.json]`, `*.auto.tfvars[.json]`, and environment variables (`TF_VAR_` followed by the name of a declared variable) to be assigned to the generated definitions automatically.
     ```
     $ export TF_VAR_availability_zone_names='["custom_zone"]'
@@ -96,18 +125,6 @@ variable "docker_ports" {
     image_id = "abc"
   ```
 
-- The `-r, --resource` flag outputs all variables as terraform resources for the `tfe_variable resource` found in the `tfe` provider <https://registry.terraform.io/providers/hashicorp/tfe/latest/docs/resources/variable>
-
-- The `-w, --workspace` flag outputs all variables in the payload format for the API <https://www.terraform.io/docs/cloud/api/workspace-variables.html#sample-payload>.  You can use `jq` to filter variables by key name.
-    ```
-    $ tfvar  -w . | jq '. | select(.data.attributes.key == "region")'
-    {
-	   "data": {
-		   ...
-	   }
-    }
-    ```
-
 For more info, checkout the `--help` page:
 
 ```
@@ -125,13 +142,13 @@ Flags:
   -e, --env-var                Print output in export TF_VAR_image_id=ami-abc123 format
   -h, --help                   help for tfvar
       --ignore-default         Do not use defined default values
-  -r, --resource               Print output in hashicorp/tfe tfe_variable resource format
+  -r, --resource               Print output in Terraform Enterprise (tfe) provider's tfe_variable resource format
       --var stringArray        Set a variable in the generated definitions.
                                This flag can be set multiple times.
       --var-file stringArray   Set variables from a file.
                                This flag can be set multiple times.
   -v, --version                version for tfvar
-  -w, --workspace              Print output variables as payloads for workspace API
+  -w, --workspace              Print output variables as payloads for Workspace Variables API
 ```
 
 

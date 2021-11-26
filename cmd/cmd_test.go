@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/sebdah/goldie/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -42,6 +43,42 @@ export TF_VAR_docker_ports='[{ external = 8300, internal = 8300, protocol = "tcp
 export TF_VAR_image_id=''
 export TF_VAR_password=''
 `, actual.String())
+}
+
+func TestWFlag(t *testing.T) {
+	os.Args = strings.Fields("tfvar testdata -w")
+
+	var actual bytes.Buffer
+	cmd, sync := New(&actual, "dev")
+	defer sync()
+
+	require.NoError(t, cmd.Execute())
+
+	g := goldie.New(
+		t,
+		goldie.WithNameSuffix(".golden.json"),
+		goldie.WithDiffEngine(goldie.ColoredDiff),
+	)
+
+	g.Assert(t, "w_flag", actual.Bytes())
+}
+
+func TestRFlag(t *testing.T) {
+	os.Args = strings.Fields("tfvar testdata -r")
+
+	var actual bytes.Buffer
+	cmd, sync := New(&actual, "dev")
+	defer sync()
+
+	require.NoError(t, cmd.Execute())
+
+	g := goldie.New(
+		t,
+		goldie.WithNameSuffix(".golden.tf"),
+		goldie.WithDiffEngine(goldie.ColoredDiff),
+	)
+
+	g.Assert(t, "r_flag", actual.Bytes())
 }
 
 func TestIgnoreDefault(t *testing.T) {

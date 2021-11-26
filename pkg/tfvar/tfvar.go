@@ -3,6 +3,7 @@ package tfvar
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 
@@ -56,8 +57,6 @@ const varEnvPrefix = "TF_VAR_"
 // WriteAsEnvVars outputs the given vars in environment variables format, e.g.
 //    export TF_VAR_region='ap-northeast-1'
 func WriteAsEnvVars(w io.Writer, vars []Variable) error {
-	var we error
-
 	for _, v := range vars {
 		val := convertNull(v.Value)
 
@@ -67,13 +66,12 @@ func WriteAsEnvVars(w io.Writer, vars []Variable) error {
 		b = bytes.TrimPrefix(b, []byte(`"`))
 		b = bytes.TrimSuffix(b, []byte(`"`))
 
-		if we == nil {
-			_, err := fmt.Fprintf(w, "export %s%s='%s'\n", varEnvPrefix, v.Name, string(b))
-			we = errors.Wrap(err, "tfvar: unexpected writing export")
+		if _, err := fmt.Fprintf(w, "export %s%s='%s'\n", varEnvPrefix, v.Name, string(b)); err != nil {
+			return errors.Wrap(err, "tfvar: unexpected writing export")
 		}
 	}
 
-	return we
+	return nil
 }
 
 func oneliner(original hclwrite.Tokens) hclwrite.Tokens {
@@ -114,8 +112,26 @@ func WriteAsTFVars(w io.Writer, vars []Variable) error {
 	_, err := f.WriteTo(w)
 	return errors.Wrap(err, "tfvar: failed to write as tfvars")
 }
+
+type workspacePayload struct {
+	Data workspaceData `json:"data"`
+}
+
+type workspaceData struct {
+	Type       string              `json:"type"`
+	Attributes workspaceAttributes `json:"attributes"`
+}
+
+type workspaceAttributes struct {
+	Key         string `json:"key"`
+	Value       string `json:"value"`
+	Description string `json:"description"`
+	Category    string `json:"category"`
+	HCL         bool   `json:"hcl"`
+	Sensitive   bool   `json:"sensitive"`
+}
+
 func WriteAsWorkspacePayload(w io.Writer, vars []Variable) error {
-	var data error
 	for _, v := range vars {
 		val := convertNull(v.Value)
 
@@ -125,28 +141,33 @@ func WriteAsWorkspacePayload(w io.Writer, vars []Variable) error {
 		b = bytes.TrimPrefix(b, []byte(`"`))
 		b = bytes.TrimSuffix(b, []byte(`"`))
 		b = bytes.ReplaceAll(b, []byte(`"`), []byte(`'`))
-		data := fmt.Sprintf(`{
-			"data": {
-				"type": "vars",
-				"attributes": {
-					"key":         "%s",
-					"value":       "%s",
-					"description": "%s",
-					"category":    "%s",
-					"hcl":         %s,
-					"sensitive":   %v
-				}
-			}
-		}
-		`, v.Name, string(b), v.Description, "terraform", "false", v.Sensitive)
-		if _, err := fmt.Fprintf(w, "%s", data); err != nil {
-			return errors.Wrap(err, "tfvar: unexpected error writing payload")
+
+		payload := workspacePayload{
+			Data: workspaceData{
+				Type: "vars",
+				Attributes: workspaceAttributes{
+					Key:         v.Name,
+					Value:       string(b),
+					Description: v.Description,
+					Category:    "terraform",
+					HCL:         false,
+					Sensitive:   v.Sensitive,
+				},
+			},
 		}
 
+		enc := json.NewEncoder(w)
+		enc.SetIndent("", "  ")
+
+		if err := enc.Encode(payload); err != nil {
+			return errors.Wrap(err, "tfvar: unexpected error writing payload")
+		}
 	}
-	return data
+
+	return nil
 }
-func WriteAsTFE_Resource(w io.Writer, vars []Variable) error {
+
+func WriteAsTFEResource(w io.Writer, vars []Variable) error {
 	f := hclwrite.NewEmptyFile()
 	rootBody := f.Body()
 
@@ -160,12 +181,12 @@ func WriteAsTFE_Resource(w io.Writer, vars []Variable) error {
 		resourceBody.SetAttributeValue("description", cty.StringVal(v.Description))
 		resourceBody.SetAttributeValue("workspace_id", cty.NilVal)
 		resourceBody.SetAttributeValue("category", cty.StringVal("terraform"))
-
 	}
 
 	_, err := f.WriteTo(w)
 	return errors.Wrap(err, "tfe_variable: failed to write as tfe_variable resource")
 }
+
 func convertNull(v cty.Value) cty.Value {
 	if v.IsNull() {
 		return cty.StringVal("")

@@ -1,0 +1,78 @@
+{
+  "data": {
+    "type": "vars",
+    "attributes": {
+      "key": "availability_zone_names",
+      "value": "['us-west-1a']",
+      "description": "",
+      "category": "terraform",
+      "hcl": false,
+      "sensitive": false
+    }
+  }
+}
+{
+  "data": {
+    "type": "vars",
+    "attributes": {
+      "key": "aws_amis",
+      "value": "{ eu-west-1 = 'ami-b1cf19c6', us-east-1 = 'ami-de7ab6b6', us-west-1 = 'ami-3f75767a', us-west-2 = 'ami-21f78e11' }",
+      "description": "",
+      "category": "terraform",
+      "hcl": false,
+      "sensitive": false
+    }
+  }
+}
+{
+  "data": {
+    "type": "vars",
+    "attributes": {
+      "key": "docker_ports",
+      "value": "[{ external = 8300, internal = 8301, protocol = 'tcp' }]",
+      "description": "",
+      "category": "terraform",
+      "hcl": false,
+      "sensitive": false
+    }
+  }
+}
+{
+  "data": {
+    "type": "vars",
+    "attributes": {
+      "key": "instance_name",
+      "value": "my-instance",
+      "description": "",
+      "category": "terraform",
+      "hcl": false,
+      "sensitive": false
+    }
+  }
+}
+{
+  "data": {
+    "type": "vars",
+    "attributes": {
+      "key": "password",
+      "value": "",
+      "description": "the root password to use with the database",
+      "category": "terraform",
+      "hcl": false,
+      "sensitive": true
+    }
+  }
+}
+{
+  "data": {
+    "type": "vars",
+    "attributes": {
+      "key": "region",
+      "value": "",
+      "description": "",
+      "category": "terraform",
+      "hcl": false,
+      "sensitive": false
+    }
+  }
+}
