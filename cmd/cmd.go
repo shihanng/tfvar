@@ -12,14 +12,15 @@ import (
 )
 
 const (
-	flagAutoAssign = "auto-assign"
-	flagDebug      = "debug"
-	flagEnvVar     = "env-var"
-	flagNoDefault  = "ignore-default"
-	flagResource   = "resource"
-	flagVar        = "var"
-	flagVarFile    = "var-file"
-	flagWorkspace  = "workspace"
+	flagAutoAssign      = "auto-assign"
+	flagDebug           = "debug"
+	flagDescsAsComments = "descs-as-comments"
+	flagEnvVar          = "env-var"
+	flagNoDefault       = "ignore-default"
+	flagResource        = "resource"
+	flagVar             = "var"
+	flagVarFile         = "var-file"
+	flagWorkspace       = "workspace"
 )
 
 // New returns a new instance of cobra.Command for tfvar. Usage:
@@ -50,6 +51,7 @@ one would write it in variable definitions files (.tfvars).
 	rootCmd.PersistentFlags().BoolP(flagAutoAssign, "a", false, `Use values from environment variables TF_VAR_* and
 variable definitions files e.g. terraform.tfvars[.json] *.auto.tfvars[.json]`)
 	rootCmd.PersistentFlags().BoolP(flagDebug, "d", false, "Print debug log on stderr")
+	rootCmd.PersistentFlags().BoolP(flagDescsAsComments, "c", false, "Include variable descriptions as comments.")
 	rootCmd.PersistentFlags().BoolP(flagEnvVar, "e", false, "Print output in export TF_VAR_image_id=ami-abc123 format")
 	rootCmd.PersistentFlags().BoolP(flagResource, "r", false, "Print output in Terraform Enterprise (tfe) provider's tfe_variable resource format")
 	rootCmd.PersistentFlags().BoolP(flagWorkspace, "w", false, "Print output variables as payloads for Workspace Variables API")
@@ -179,21 +181,31 @@ func (r *runner) rootRunE(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	writer := tfvar.WriteAsTFVars
+	var writer func(w io.Writer, vars []tfvar.Variable) error
 
 	if isEnvVar {
 		r.log.Debug("Print outputs in environment variables format")
 		writer = tfvar.WriteAsEnvVars
-	}
-
-	if isWorkspace {
+	} else if isWorkspace {
 		r.log.Debug("Print outputs in Workspace API payload format")
 		writer = tfvar.WriteAsWorkspacePayload
-	}
-
-	if isResource {
+	} else if isResource {
 		r.log.Debug("Print outputs in tfe_resource format")
 		writer = tfvar.WriteAsTFEResource
+	} else {
+		r.log.Debug("Print outputs in tfvars format")
+		withComments, err := cmd.PersistentFlags().GetBool(flagDescsAsComments)
+		if err != nil {
+			return errors.Wrapf(err, "cmd: get flag --%s", flagDescsAsComments)
+		}
+		if withComments {
+			r.log.Debug("Including comments in tfvars output")
+		} else {
+			r.log.Debug("Not including comments in tfvars output")
+		}
+		writer = func(w io.Writer, vars []tfvar.Variable) error {
+			return tfvar.WriteAsTFVars(withComments, w, vars)
+		}
 	}
 	return writer(r.out, vars)
 }
