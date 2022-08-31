@@ -10,7 +10,7 @@ import (
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/hashicorp/hcl/v2/json"
-	"github.com/hashicorp/terraform/configs"
+	"github.com/shihanng/tfvar/pkg/configs"
 	"github.com/zclconf/go-cty/cty"
 )
 
