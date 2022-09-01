@@ -2,10 +2,10 @@ name: main
 on:
   push:
     branches:
-      - master
+      - trunk
   pull_request:
     branches:
-      - master
+      - trunk
 
 jobs:
   tests:
