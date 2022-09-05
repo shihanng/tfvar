@@ -79,7 +79,7 @@ func TestWriteAsTFVars(t *testing.T) {
 	sort.Slice(vars, func(i, j int) bool { return vars[i].Name < vars[j].Name })
 
 	var buf bytes.Buffer
-	assert.NoError(t, WriteAsTFVars(&buf, vars))
+	assert.NoError(t, WriteAsTFVars(true, &buf, vars))
 
 	expected := `availability_zone_names = ["us-west-1a"]
 aws_amis = {
@@ -94,8 +94,9 @@ docker_ports = [{
   protocol = "tcp"
 }]
 instance_name = "my-instance"
-password      = null
-region        = null
+# the root password to use with the database
+password = null
+region   = null
 `
 	assert.Equal(t, expected, buf.String())
 }

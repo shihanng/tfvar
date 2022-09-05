@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"strings"
 
 	"github.com/cockroachdb/errors"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
@@ -101,16 +102,41 @@ func oneliner(original hclwrite.Tokens) hclwrite.Tokens {
 
 // WriteAsTFVars outputs the given vars in Terraform's variable definitions format, e.g.
 //    region = "ap-northeast-1"
-func WriteAsTFVars(w io.Writer, vars []Variable) error {
+func WriteAsTFVars(withComments bool, w io.Writer, vars []Variable) error {
 	f := hclwrite.NewEmptyFile()
 	rootBody := f.Body()
 
 	for _, v := range vars {
+		if withComments {
+			comment := strings.TrimSpace(v.Description)
+			if len(comment) > 0 {
+				rootBody.AppendUnstructuredTokens(commentToTokens(comment))
+			}
+		}
 		rootBody.SetAttributeValue(v.Name, v.Value)
 	}
 
 	_, err := f.WriteTo(w)
 	return errors.Wrap(err, "tfvar: failed to write as tfvars")
+}
+
+func commentToTokens(comment string) hclwrite.Tokens {
+	lines := strings.Split(comment, "\n")
+	newLine := hclwrite.Token{
+		Type:  hclsyntax.TokenNewline,
+		Bytes: []byte(string(hclsyntax.TokenNewline)),
+	}
+
+	var tokens hclwrite.Tokens
+	for _, line := range lines {
+		tokens = append(tokens, &hclwrite.Token{
+			Type:  hclsyntax.TokenComment,
+			Bytes: []byte(fmt.Sprintf("# %s", line)),
+		})
+		tokens = append(tokens, &newLine)
+	}
+
+	return tokens
 }
 
 type workspacePayload struct {
