@@ -31,6 +31,7 @@ func TestLoad(t *testing.T) {
 			want: []Variable{
 				{Name: "resource_name", parsingMode: configs.VariableParseLiteral},
 				{Name: "instance_name", Value: cty.StringVal("my-instance"), parsingMode: configs.VariableParseLiteral},
+				{Name: "object", parsingMode: configs.VariableParseHCL},
 			},
 			assertion: assert.NoError,
 		},
