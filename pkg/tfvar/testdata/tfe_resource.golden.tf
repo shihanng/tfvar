@@ -61,3 +61,16 @@ resource "tfe_variable" "region" {
   workspace_id = null
   category     = "terraform"
 }
+
+resource "tfe_variable" "with_optional_attribute" {
+  key = "with_optional_attribute"
+  value = {
+    a = "val-a"
+    b = null
+    c = 127
+  }
+  sensitive    = false
+  description  = ""
+  workspace_id = null
+  category     = "terraform"
+}
