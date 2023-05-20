@@ -50,3 +50,14 @@ variable "password" {
   description = "the root password to use with the database"
   sensitive   = true
 }
+
+variable "with_optional_attribute" {
+  type = object({
+    a = string
+    b = optional(string)
+    c = optional(number, 127)
+  })
+  default = {
+    a = "val-a"
+  }
+}

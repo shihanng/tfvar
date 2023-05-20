@@ -76,3 +76,16 @@
     }
   }
 }
+{
+  "data": {
+    "type": "vars",
+    "attributes": {
+      "key": "with_optional_attribute",
+      "value": "{ a = 'val-a', b = null, c = 127 }",
+      "description": "",
+      "category": "terraform",
+      "hcl": false,
+      "sensitive": false
+    }
+  }
+}

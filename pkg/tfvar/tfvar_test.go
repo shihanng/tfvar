@@ -69,6 +69,7 @@ export TF_VAR_docker_ports='[{ external = 8300, internal = 8301, protocol = "tcp
 export TF_VAR_instance_name='my-instance'
 export TF_VAR_password=''
 export TF_VAR_region=''
+export TF_VAR_with_optional_attribute='{ a = "val-a", b = null, c = 127 }'
 `
 	assert.Equal(t, expected, buf.String())
 }
@@ -97,6 +98,11 @@ docker_ports = [{
 instance_name = "my-instance"
 password      = null
 region        = null
+with_optional_attribute = {
+  a = "val-a"
+  b = null
+  c = 127
+}
 `
 	assert.Equal(t, expected, buf.String())
 }

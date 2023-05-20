@@ -4,7 +4,7 @@ variable "instance_name" {
 }
 variable "object" {
   type = object({
-    name = string
+    name = optional(string)
   })
 }
 
