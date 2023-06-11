@@ -160,6 +160,12 @@ Flags:
 brew install shihanng/tfvar/tfvar
 ```
 
+### [MacPorts (macOS)](https://ports.macports.org/port/tfvar/)
+
+```
+sudo port install tfvar
+```
+
 ### Debian, Ubuntu
 
 ```
