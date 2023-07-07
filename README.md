@@ -8,7 +8,9 @@
 [![Package Documentation](https://godoc.org/github.com/shihanng/tfvar/pkg/tfvar?status.svg)](http://godoc.org/github.com/shihanng/tfvar/pkg/tfvar)
 [![GitHub license](https://img.shields.io/github/license/shihanng/tfvar)](https://github.com/shihanng/tfvar/blob/trunk/LICENSE)
 
-**tfvar** is a [Terraform](https://www.terraform.io/)'s [variable definitions](https://www.terraform.io/docs/configuration/variables.html#assigning-values-to-root-module-variables) template generator.
+![Banner of the project](./banner.png)
+
+**tfvar** is a [Terraform](https://www.terraform.io/)'s [variable definitions](https://www.terraform.io/docs/configuration/variables.html#assigning-values-to-root-module-variables) template generator. It scans your **Terraform configurations** or **modules** and extracts the variables into formats of your choice for editing, e.g., tfvar, environment variables, etc.
 
 For Terraform configuration that has input variables declared, e.g.,
 
