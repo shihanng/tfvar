@@ -12,3 +12,8 @@ moved {
   from = aws_instance.a
   to   = aws_instance.b
 }
+
+import {
+  id = "i-123545"
+  to = aws_instance.b
+}
