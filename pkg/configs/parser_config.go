@@ -60,6 +60,7 @@ func (p *Parser) loadConfigFile(path string, override bool) (*File, hcl.Diagnost
 		case "resource":
 		case "data":
 		case "moved":
+		case "import":
 		default:
 			// Should never happen because the above cases should be exhaustive
 			// for all block type names in our schema.
@@ -114,6 +115,9 @@ var configFileSchema = &hcl.BodySchema{
 		},
 		{
 			Type: "moved",
+		},
+		{
+			Type: "import",
 		},
 	},
 }
