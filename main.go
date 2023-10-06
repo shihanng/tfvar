@@ -10,7 +10,9 @@ var version = "dev"
 
 func main() {
 	c, sync := cmd.New(os.Stdout, version)
-	_ = c.Execute()
+	defer sync()
 
-	sync()
+	if err := c.Execute(); err != nil {
+		os.Exit(1)
+	}
 }
