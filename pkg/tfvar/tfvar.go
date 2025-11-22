@@ -180,7 +180,9 @@ func WriteAsTFEResource(w io.Writer, vars []Variable) error {
 		resourceBody.SetAttributeValue("key", cty.StringVal(v.Name))
 		resourceBody.SetAttributeValue("value", v.Value)
 		resourceBody.SetAttributeValue("sensitive", cty.BoolVal(v.Sensitive))
-		resourceBody.SetAttributeValue("ephemeral", cty.BoolVal(v.Ephemeral))
+		if v.Ephemeral {
+			resourceBody.SetAttributeValue("ephemeral", cty.BoolVal(v.Ephemeral))
+		}
 		resourceBody.SetAttributeValue("description", cty.StringVal(v.Description))
 		resourceBody.SetAttributeValue("workspace_id", cty.NilVal)
 		resourceBody.SetAttributeValue("category", cty.StringVal("terraform"))
