@@ -27,7 +27,8 @@ archives:
       - README*
 
 brews:
-  - tap:
+  - skip: true
+    tap:
       owner: shihanng
       name: homebrew-tfvar
     commit_author:
