@@ -23,6 +23,7 @@ type Variable struct {
 	Value       cty.Value
 	Description string
 	Sensitive   bool
+	Ephemeral   bool
 
 	parsingMode configs.VariableParsingMode
 }
@@ -44,6 +45,7 @@ func Load(dir string) ([]Variable, error) {
 			Value:       v.Default,
 			Description: v.Description,
 			Sensitive:   v.Sensitive,
+			Ephemeral:   v.Ephemeral,
 
 			parsingMode: v.ParsingMode,
 		})
@@ -178,6 +180,7 @@ func WriteAsTFEResource(w io.Writer, vars []Variable) error {
 		resourceBody.SetAttributeValue("key", cty.StringVal(v.Name))
 		resourceBody.SetAttributeValue("value", v.Value)
 		resourceBody.SetAttributeValue("sensitive", cty.BoolVal(v.Sensitive))
+		resourceBody.SetAttributeValue("ephemeral", cty.BoolVal(v.Ephemeral))
 		resourceBody.SetAttributeValue("description", cty.StringVal(v.Description))
 		resourceBody.SetAttributeValue("workspace_id", cty.NilVal)
 		resourceBody.SetAttributeValue("category", cty.StringVal("terraform"))
