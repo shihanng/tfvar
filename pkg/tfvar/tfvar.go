@@ -15,9 +15,10 @@ import (
 )
 
 // Variable represents a simplified version of Terraform's input variable, e.g.
-//    variable "image_id" {
-//      type = string
-//    }
+//
+//	variable "image_id" {
+//	  type = string
+//	}
 type Variable struct {
 	Name        string
 	Value       cty.Value
@@ -57,7 +58,8 @@ func Load(dir string) ([]Variable, error) {
 const varEnvPrefix = "TF_VAR_"
 
 // WriteAsEnvVars outputs the given vars in environment variables format, e.g.
-//    export TF_VAR_region='ap-northeast-1'
+//
+//	export TF_VAR_region='ap-northeast-1'
 func WriteAsEnvVars(w io.Writer, vars []Variable) error {
 	for _, v := range vars {
 		val := convertNull(v.Value)
@@ -102,7 +104,8 @@ func oneliner(original hclwrite.Tokens) hclwrite.Tokens {
 }
 
 // WriteAsTFVars outputs the given vars in Terraform's variable definitions format, e.g.
-//    region = "ap-northeast-1"
+//
+//	region = "ap-northeast-1"
 func WriteAsTFVars(w io.Writer, vars []Variable) error {
 	f := hclwrite.NewEmptyFile()
 	rootBody := f.Body()
@@ -174,15 +177,16 @@ func WriteAsTFEResource(w io.Writer, vars []Variable) error {
 	rootBody := f.Body()
 
 	for _, v := range vars {
+		if v.Ephemeral {
+			continue
+		}
 		rootBody.AppendNewline()
 		resourceBlock := rootBody.AppendNewBlock("resource", []string{"tfe_variable", v.Name})
 		resourceBody := resourceBlock.Body()
 		resourceBody.SetAttributeValue("key", cty.StringVal(v.Name))
 		resourceBody.SetAttributeValue("value", v.Value)
 		resourceBody.SetAttributeValue("sensitive", cty.BoolVal(v.Sensitive))
-		if v.Ephemeral {
-			resourceBody.SetAttributeValue("ephemeral", cty.BoolVal(v.Ephemeral))
-		}
+
 		resourceBody.SetAttributeValue("description", cty.StringVal(v.Description))
 		resourceBody.SetAttributeValue("workspace_id", cty.NilVal)
 		resourceBody.SetAttributeValue("category", cty.StringVal("terraform"))

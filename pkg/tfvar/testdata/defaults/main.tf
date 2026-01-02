@@ -61,3 +61,14 @@ variable "with_optional_attribute" {
     a = "val-a"
   }
 }
+
+variable "session_id" {
+  type      = string
+  ephemeral = true
+}
+
+variable "ephemeral_variable" {
+  type      = string
+  ephemeral = true
+  default = "some-ephemeral-value"
+}
