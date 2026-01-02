@@ -66,9 +66,3 @@ variable "session_id" {
   type      = string
   ephemeral = true
 }
-
-variable "ephemeral_variable" {
-  type      = string
-  ephemeral = true
-  default = "some-ephemeral-value"
-}
