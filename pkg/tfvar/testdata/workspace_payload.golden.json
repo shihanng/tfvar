@@ -41,19 +41,6 @@
   "data": {
     "type": "vars",
     "attributes": {
-      "key": "ephemeral_variable",
-      "value": "some-ephemeral-value",
-      "description": "",
-      "category": "terraform",
-      "hcl": false,
-      "sensitive": false
-    }
-  }
-}
-{
-  "data": {
-    "type": "vars",
-    "attributes": {
       "key": "instance_name",
       "value": "my-instance",
       "description": "",

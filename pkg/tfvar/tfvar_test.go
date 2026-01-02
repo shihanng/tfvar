@@ -54,20 +54,6 @@ func TestLoad(t *testing.T) {
 	}
 }
 
-func TestLoad_Ephemeral(t *testing.T) {
-	vars, err := Load("testdata/defaults")
-	require.NoError(t, err)
-
-	var found bool
-	for _, v := range vars {
-		if v.Name == "session_id" {
-			found = true
-			assert.True(t, v.Ephemeral)
-		}
-	}
-	assert.True(t, found, "expected to find session_id variable")
-}
-
 func TestWriteAsEnvVars(t *testing.T) {
 	vars, err := Load("testdata/defaults")
 	require.NoError(t, err)
@@ -80,7 +66,6 @@ func TestWriteAsEnvVars(t *testing.T) {
 	expected := `export TF_VAR_availability_zone_names='["us-west-1a"]'
 export TF_VAR_aws_amis='{ eu-west-1 = "ami-b1cf19c6", us-east-1 = "ami-de7ab6b6", us-west-1 = "ami-3f75767a", us-west-2 = "ami-21f78e11" }'
 export TF_VAR_docker_ports='[{ external = 8300, internal = 8301, protocol = "tcp" }]'
-export TF_VAR_ephemeral_variable='some-ephemeral-value'
 export TF_VAR_instance_name='my-instance'
 export TF_VAR_password=''
 export TF_VAR_region=''
@@ -111,7 +96,6 @@ docker_ports = [{
   internal = 8301
   protocol = "tcp"
 }]
-ephemeral_variable = "some-ephemeral-value"
 instance_name      = "my-instance"
 password           = null
 region             = null
