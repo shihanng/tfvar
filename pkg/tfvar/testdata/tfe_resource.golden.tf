@@ -62,6 +62,16 @@ resource "tfe_variable" "region" {
   category     = "terraform"
 }
 
+resource "tfe_variable" "session_id" {
+  key          = "session_id"
+  value        = null
+  sensitive    = false
+  description  = ""
+  workspace_id = null
+  category     = "terraform"
+  ephemeral    = true
+}
+
 resource "tfe_variable" "with_optional_attribute" {
   key = "with_optional_attribute"
   value = {
