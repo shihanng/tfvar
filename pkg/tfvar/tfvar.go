@@ -174,9 +174,6 @@ func WriteAsTFEResource(w io.Writer, vars []Variable) error {
 	rootBody := f.Body()
 
 	for _, v := range vars {
-		if v.Ephemeral {
-			continue
-		}
 		rootBody.AppendNewline()
 		resourceBlock := rootBody.AppendNewBlock("resource", []string{"tfe_variable", v.Name})
 		resourceBody := resourceBlock.Body()
