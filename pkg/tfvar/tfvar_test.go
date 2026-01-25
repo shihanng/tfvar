@@ -96,10 +96,10 @@ docker_ports = [{
   internal = 8301
   protocol = "tcp"
 }]
-instance_name      = "my-instance"
-password           = null
-region             = null
-session_id         = null
+instance_name = "my-instance"
+password      = null
+region        = null
+session_id    = null
 with_optional_attribute = {
   a = "val-a"
   b = null
