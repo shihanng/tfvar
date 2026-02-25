@@ -69,7 +69,6 @@ resource "tfe_variable" "session_id" {
   description  = ""
   workspace_id = null
   category     = "terraform"
-  ephemeral    = true
 }
 
 resource "tfe_variable" "with_optional_attribute" {
