@@ -19,6 +19,10 @@ func (v *Variable) merge(ov *Variable) hcl.Diagnostics {
 		v.Sensitive = ov.Sensitive
 		v.SensitiveSet = ov.SensitiveSet
 	}
+	if ov.EphemeralSet {
+		v.Ephemeral = ov.Ephemeral
+		v.EphemeralSet = ov.EphemeralSet
+	}
 	if ov.Default != cty.NilVal {
 		v.Default = ov.Default
 	}

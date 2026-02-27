@@ -23,6 +23,7 @@ type Variable struct {
 	Value       cty.Value
 	Description string
 	Sensitive   bool
+	Ephemeral   bool
 
 	parsingMode configs.VariableParsingMode
 }
@@ -44,6 +45,7 @@ func Load(dir string) ([]Variable, error) {
 			Value:       v.Default,
 			Description: v.Description,
 			Sensitive:   v.Sensitive,
+			Ephemeral:   v.Ephemeral,
 
 			parsingMode: v.ParsingMode,
 		})
